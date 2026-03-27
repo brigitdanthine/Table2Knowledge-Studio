@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Turn spreadsheets into knowledge graphs — visually and without ontology expertise.</strong><br>
-  A drag-and-drop mapping tool for RDF/OWL ontologies with built-in RDF export.
+  A drag-and-drop mapping tool for RDF/OWL ontologies with built-in RDF export for our own data.
 </p>
 
 <p align="center">
