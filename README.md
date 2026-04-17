@@ -304,6 +304,13 @@ If a node contains literal values — meaning that no prefix should be added aut
 <p>
     <img src="docs/images/literal_no-prefix.png" alt="Literals, no Prefix" width="800">
 </p>
+
+If the data for two connected nodes comes from two different tables, you can set up a join key by double-clicking on the respective property and specifying the join key columns in the dialog.
+
+<p>
+    <img src="docs/images/join_keys.gif" alt="Set Join Keys" width="800">
+</p>
+
  
 ### 6. Prefix Manager
  
