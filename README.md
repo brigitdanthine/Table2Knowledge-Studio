@@ -293,7 +293,7 @@ To enrich your conceptual graph with your own data, switch to the **Table Panel*
  
 Simply drag and drop the columns onto the respective node. For each node, your table must include a unique ID column and optionally a label column. The general prefix does not need to be included in the cell values — you can specify one general prefix in the [Prefix Manager](#6-prefix-manager).
  
-If a value needs a prefix different from the ontology prefixes or the general prefix, indicate it directly in the cell using the format `prefix:value` (e.g. `geonames:2782113`).
+If a value needs a prefix different from the ontology prefixes or the general prefix, indicate it directly in the cell using the format `prefix:value` (e.g. `geonames:6946280`).
  
 <p>
     <img src="docs/images/assign_colums_to_nodes.gif" alt="Assign Columns to Nodes" width="800">
@@ -328,13 +328,7 @@ You can validate your graph at any time. The check covers both the conceptual gr
 </p>
  
 ### 8. Export
- 
-You can export your graph as `.graphml`, `.png` or `.svg`.
- 
-You can also export your data directly as RDF. Supported formats are: `TriG`, `N-Quads`, `Turtle`, `RDF/XML`, `N-Triples` and `JSON-LD`.
- 
-> **Note:** Named graphs are only supported in `TriG` and `N-Quads`.
- 
+
 | Format | Description |
 |---|---|
 | **RDF** (TriG, Turtle, etc.) | Direct 1-click RDF export with RDF-star support |
@@ -342,6 +336,12 @@ You can also export your data directly as RDF. Supported formats are: `TriG`, `N
 | **GraphML** | yEd-compatible graph with colors and positions |
 | **PNG** | Image at 2× resolution |
 | **SVG** | Scalable vector graphic, editable in Illustrator / Inkscape |
+
+You can export your graph as `.graphml`, `.png` or `.svg`.
+ 
+You can also export your data directly as RDF. Supported formats are: `TriG`, `N-Quads`, `Turtle`, `RDF/XML`, `N-Triples` and `JSON-LD`.
+ 
+> **Note:** Named graphs are only supported in `TriG` and `N-Quads`.
  
 #### RDF Pipeline
  
