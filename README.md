@@ -285,7 +285,7 @@ Click on a named graph entry to highlight its nodes with a colored bounding box 
  
 ### 5. Map Your Data onto the Conceptual Graph
  
-To enrich your conceptual graph with your own data, switch to the **Table Panel** and load your tables (`.csv`, `.tsv`, `.xls`, `.xlsx`). Your tables will be loaded and the first 10 rows will be shown.
+To enrich your conceptual graph with your own data, switch to the **Table Panel** ① and load your tables (`.csv`, `.tsv`, `.xls`, `.xlsx`) ②. Your tables will be loaded and the first 10 rows will be shown ③.
  
 <p>
     <img src="docs/images/load_tables.png" alt="Load Tables" width="800">
