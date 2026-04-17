@@ -177,7 +177,7 @@ First, you need to load one or more ontologies. Make sure the Ontology Panel is 
     <img src="docs/images/load_ontologies.png" alt="Load Ontologies" width="600">
 </p>
 
-Supported types are: `.ttl`, `.rdf`, `.owl`, `.xml`, `.nt` and `.n3`
+Supported types are: `.ttl`, `.rdf`, `.owl`, `.xml`, `.nt` and `.n3`.
 
 You can add more ontologies at any time or remove them by clicking ❌.
 
