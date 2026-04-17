@@ -4,7 +4,7 @@
 
 <p align="center">
   <strong>Turn spreadsheets into knowledge graphs — visually and without ontology expertise.</strong><br>
-  A drag-and-drop mapping tool for RDF/OWL ontologies with built-in RDF export for our own data.
+  A drag-and-drop mapping tool for RDF/OWL ontologies with built-in RDF export for your own data.
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 ## What is Table2Knowledge Studio?
 
 Table2Knowledge Studio is a localhost web application that lets you map tabular data (CSV, TSV, Excel) onto RDF/OWL ontologies through an intuitive visual interface. You build a conceptual graph by dragging ontology classes onto a canvas, connect them with properties, assign table columns to nodes, and export the result as RDF — ready for your triplestore.  
-It was originally developed for archaeological data management using CIDOC CRM and its extensions, but works with any **RDF/OWL ontology**.
+It was originally developed for archaeological data modelling using CIDOC CRM and its extensions, but works with any **RDF/OWL ontology**.
 
 ### Why Table2Knowledge?
  
@@ -151,7 +151,7 @@ Then open **<http://localhost:3000>**.
 
 | | Element | Details |
 |---|---|---|
-| ① | Graph window | The main canvas where you build your conceptual graph through drag-and-drop |
+| ① | Graph window | The main canvas where you build your graph through drag-and-drop |
 | ② | Side panel | Displays either the Ontology Panel (browse and search ontologies) or the Table Panel (load and map tables) |
 | ③ | Panel toggle | Switches between the Ontology Panel and the Table Panel |
 | ④ | [Namespace Prefix Manager](#6-prefix-manager) | Defines URIs for all prefixes used in your ontologies and table data |
@@ -207,12 +207,6 @@ Now you can start building your conceptual graph. Drag and drop subjects and obj
 
 <p>
     <img src="docs/images/drag-and-drop-subject-domain.gif" alt="Drag-and-Drop Subject/Domain" width="800">
-</p>
-
-If a node is selected on the canvas when you drop a new one, the property between Subject/Domain and Object/Range will automatically be created.
-
-<p>
-    <img src="docs/images/add-node_selected-node.gif" alt="Add Node with Node selected" width="800">
 </p>
 
 If a node is selected on the canvas when you drop a new one, the property between subject and object will automatically be created.
