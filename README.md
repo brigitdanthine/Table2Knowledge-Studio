@@ -190,9 +190,9 @@ You can add more ontologies at any time or remove them by clicking ❌.
 You can search through all loaded ontologies for specific entities: under **"Subject/Domain"** in the Ontology Panel, click **"Select Class"** ① and search for the desired term ②. To read the description of an entity, click the ℹ button ③. To select an entity as subject/domain, simply click on it. The selected class will appear in the Subject/Domain field ④.
 
 <p>
-    <img src="docs/images/search_subject-domain.png" alt="Search Entity for Subject/Domain" width="600">
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <img src="docs/images/added_subject-domain.png" alt="Added Entity as Subject/Domain" width="600">
+    <img src="docs/images/search_subject-domain.png" alt="Search Entity for Subject/Domain" width="400">
+    &nbsp;&nbsp;
+    <img src="docs/images/added_subject-domain.png" alt="Added Entity as Subject/Domain" width="400">
 </p>
 
 Depending on your [widening settings](#widening-settings), all valid properties for the selected entity are shown in the **Property/Predicate** dialog. You can search and select your desired property. 
