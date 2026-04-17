@@ -402,42 +402,42 @@ Load the `.xlsx` files via the Table Panel, open the project `.json` via **Load*
  
 ## CIDOC CRM Support
  
-While Table2Knowledge works with any RDF/OWL ontology, it has built-in support for CIDOC CRM:
+While Table2Knowledge Studio works with any RDF/OWL ontology, it has built-in support for CIDOC CRM:
  
 - **Color coding** — Nodes are colored by their CRM anchor class (e.g. brown for Physical Things, blue for Temporal Entities, pink for Actors)
 - **Label preference** — German `rdfs:label` translations are preferred, with fallback to English
-- **CRM extensions** — Supports CRMarchaeo, CRMsci, LRMoo and other CIDOC extensions
+- **CRM extensions** — Supports CRMarchaeo, CRMsci, CRMinf and other CIDOC extensions
 - **Auto-prefixing** — CRM property patterns (`P1_`, `AP3_`, `SP5_` etc.) are auto-resolved to `crm:` prefix
  
 ---
  
 ## Troubleshooting
  
-**Port 8000 or 3000 already in use**
+**Port 8000 or 3000 already in use**  
 Another application is occupying the port. Close that application, or change the port: for the backend, edit the `--port` argument in `start.bat`/`start.sh`; for the frontend, edit `vite.config.js`.
  
-**"python is not recognized" (Windows)**
+**"python is not recognized" (Windows)**  
 During Python installation, the option **"Add Python to PATH"** was not checked. Either reinstall Python with that option enabled, or add Python to your PATH manually.
  
-**"npm is not recognized" / Node.js commands fail**
+**"npm is not recognized" / Node.js commands fail**  
 Node.js is not installed or not in your PATH. Install Node.js 18+ from <https://nodejs.org/en/download/> and restart your terminal.
  
-**Frontend shows a blank page**
+**Frontend shows a blank page**  
 Check that the backend is running on port 8000. Open <http://localhost:8000/health> in your browser — you should see `{"status": "ok"}`. If not, restart the backend.
  
-**Ontologies are not loading / classes not showing up**
+**Ontologies are not loading / classes not showing up**  
 Check that the uploaded file is a supported format (`.ttl`, `.rdf`, `.owl`, `.xml`, `.nt`, `.n3`) and contains valid RDF. Malformed ontology files will silently fail to parse — try opening the file in a text editor or an RDF validator first.
  
-**Properties are missing in the Triple Explorer**
+**Properties are missing in the Triple Explorer**  
 Enable **Widening Parent** and/or **Widening Child** in the toolbar. Without widening, only properties with a direct `rdfs:domain` match are shown.
  
-**Undefined prefixes after export**
+**Undefined prefixes after export**  
 Open the **Prefix Manager** before exporting. Any prefix detected in your table data that is not defined will be listed with a ⚠ warning. Click on it and add the full URI.
  
-**Ontotext Refine: "JAR not found"**
+**Ontotext Refine: "JAR not found"**  
 Specify the full path to `ontorefine-cli.jar` in Step 2 of the RDF Pipeline. The JAR is included in the project folder.
  
-**RDF Pipeline fails at Step 2 or Step 3**
+**RDF Pipeline fails at Step 2 or Step 3**  
 Make sure Ontotext Refine (Step 2) and/or GraphDB (Step 3) are actually running on your computer and reachable at the configured URLs.
  
 ---
