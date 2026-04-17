@@ -60,8 +60,8 @@ Upload one or more TTL/RDF/OWL ontology files. The backend parses them and build
 Use the **Triple Explorer** (side panel on the left) to browse the ontology:
 
 - **① Subject** — Select a class (e.g. `E27_Site`)
-- **② Predicate** — Pick a property (e.g. `P89_falls_within`)
-- **③ Object** — Choose the range class (e.g. `E53_Place`)
+- **② Predicate** — Pick a property (e.g. `AP3i_was_investigated_by`)
+- **③ Object** — Choose the range class (e.g. `A9_Archaeological_Excavation`)
 
 Drag classes onto the canvas to create nodes. Connect them by drawing edges between handles, or let the tool auto-connect when you drop an object while a subject is selected.
 
@@ -229,7 +229,7 @@ If you need to change the exit or entry point of a property, you can edit the so
     <img src="docs/images/change-input-output-connection.gif" alt="Change Connection" width="800">
 </p>
  
-You can also add custom nodes at any time:
+You can also add **custom nodes** at any time:
  
 <p>
     <img src="docs/images/custom-nodes.gif" alt="Add Custom Node" width="800">
