@@ -296,7 +296,7 @@ Simply drag and drop the columns onto the respective node. For each node, your t
 If a value needs a prefix different from the ontology prefixes or the general prefix, indicate it directly in the cell using the format `prefix:value` (e.g. `geonames:6946280`).
  
 <p>
-    <img src="docs/images/assign_colums_to_nodes.gif" alt="Assign Columns to Nodes" width="800">
+    <img src="docs/images/assign_columns_to_nodes.gif" alt="Assign Columns to Nodes" width="800">
 </p>
  
 If a node contains literal values — meaning that no prefix should be added automatically — you can activate the **Literal (no prefix)** option on the respective node. If the checkbox is unchecked ①, the global prefix will be added to these values. If the box is checked ②, no prefix will be added:
