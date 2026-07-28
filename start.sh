@@ -1,5 +1,5 @@
 #!/bin/bash
-# Table2Knowledge Studio – Start Script (macOS / Linux)
+# OntoCartographer Studio – Start Script (macOS / Linux)
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -7,7 +7,7 @@ cd "$SCRIPT_DIR"
 
 echo ""
 echo "╔════════════════════════════════════════╗"
-echo "║       Table2Knowledge Studio           ║"
+echo "║        OntoCartographer Studio         ║"
 echo "╚════════════════════════════════════════╝"
 echo ""
 

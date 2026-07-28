@@ -1,5 +1,5 @@
 #!/bin/bash
-# Table2Knowledge Studio – Setup Script (macOS / Linux)
+# OntoCartographer Studio – Setup Script (macOS / Linux)
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -7,7 +7,7 @@ cd "$SCRIPT_DIR"
 
 echo ""
 echo "╔════════════════════════════════════════╗"
-echo "║      Table2Knowledge Studio Setup      ║"
+echo "║     OntoCartographer Studio Setup      ║"
 echo "╚════════════════════════════════════════╝"
 echo ""
 

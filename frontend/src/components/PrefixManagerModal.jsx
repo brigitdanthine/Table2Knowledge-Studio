@@ -105,10 +105,10 @@ export default function PrefixManagerModal({ prefixMap, idPrefix, onSave, onClos
         {/* Data-ID prefix */}
         <div style={{ background:'var(--bg)', borderRadius:6, padding:'10px 14px', border:'1px solid var(--border)' }}>
           <div style={{ fontSize:11, color:'var(--text-muted)', marginBottom:6 }}>
-            <b style={{ color:'var(--text)' }}>Data ID Prefix</b> — is prepended to all value IDs (e.g. <code style={{ fontFamily:'var(--mono)' }}>example:[value]</code>)
+            <b style={{ color:'var(--text)' }}>Data ID Prefix</b> — is prepended to all value IDs (e.g. <code style={{ fontFamily:'var(--mono)' }}>your_prefix:[value]</code>)
           </div>
           <div style={{ display:'flex', alignItems:'center', gap:6 }}>
-            <input value={localIdPrefix} onChange={e => setLocalIdPrefix(e.target.value)} style={{ ...inp, width:100 }} placeholder="e.g. example" />
+            <input value={localIdPrefix} onChange={e => setLocalIdPrefix(e.target.value)} style={{ ...inp, width:110 }} placeholder="your_prefix" />
             <span style={{ fontSize:12, color:'var(--text-muted)', fontFamily:'var(--mono)' }}>:</span>
           </div>
         </div>
@@ -135,8 +135,8 @@ export default function PrefixManagerModal({ prefixMap, idPrefix, onSave, onClos
 
         {/* Unresolved table prefixes warning */}
         {detectedTablePrefixes.length > 0 && (
-          <div style={{ background:'rgba(245,158,11,0.08)', border:'1px solid rgba(245,158,11,0.25)', borderRadius:6, padding:'10px 14px' }}>
-            <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:11, color:'#d48c1a', fontWeight:600, marginBottom:6 }}>
+          <div style={{ background:'rgba(255,191,40,0.08)', border:'1px solid rgba(163,114,0,0.25)', borderRadius:6, padding:'10px 14px' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:11, color:'#a37200', fontWeight:600, marginBottom:6 }}>
               <AlertTriangle size={12} />
               Prefixes found in tables/nodes without namespace definition:
             </div>
@@ -153,9 +153,9 @@ export default function PrefixManagerModal({ prefixMap, idPrefix, onSave, onClos
                     }}
                     style={{
                       fontSize:10, padding:'3px 8px', borderRadius:4, fontFamily:'var(--mono)',
-                      border: nowDefined ? '1px solid rgba(76,175,125,0.3)' : '1px solid rgba(245,158,11,0.4)',
-                      background: nowDefined ? 'rgba(76,175,125,0.08)' : 'rgba(245,158,11,0.08)',
-                      color: nowDefined ? 'var(--green)' : '#d48c1a',
+                      border: nowDefined ? '1px solid rgba(20,163,92,0.3)' : '1px solid rgba(163,114,0,0.4)',
+                      background: nowDefined ? 'rgba(92,236,148,0.08)' : 'rgba(255,191,40,0.08)',
+                      color: nowDefined ? 'var(--green)' : '#a37200',
                       cursor: nowDefined ? 'default' : 'pointer',
                     }}
                     title={nowDefined ? 'Already defined' : `Click to add "${p}" "`}
@@ -166,7 +166,7 @@ export default function PrefixManagerModal({ prefixMap, idPrefix, onSave, onClos
               })}
             </div>
             <div style={{ fontSize:9, color:'var(--text-muted)', marginTop:6 }}>
-              Klicke auf einen Prefix, um ihn unten mit der passenden Namespace-URI ".
+              Click a prefix to prefill it below, then add the matching namespace URI.
               Unresolved prefixes will not be correctly expanded in the RDF Pipeline.
             </div>
           </div>

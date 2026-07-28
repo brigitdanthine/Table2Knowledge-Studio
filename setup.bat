@@ -4,7 +4,7 @@ setlocal enabledelayedexpansion
 
 echo.
 echo ==========================================
-echo ==        Table2Knowledge Studio        ==
+echo ==        OntoCartographer Studio       ==
 echo ==========================================
 echo.
 

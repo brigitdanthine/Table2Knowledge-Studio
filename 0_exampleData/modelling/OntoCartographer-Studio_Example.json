@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "idPrefix": "example",
   "prefixMap": {
     "crm": "http://www.cidoc-crm.org/cidoc-crm/",
@@ -14,7 +14,8 @@
     "vocabs": "http://example.org/vocabs/",
     "wikidata": "https://www.wikidata.org/wiki/"
   },
-  "widening": true,
+  "wideningParent": true,
+  "wideningChild": true,
   "namedGraphs": [
     {
       "id": "ng_1774732598712",
@@ -88,7 +89,7 @@
         ]
       },
       "width": 170,
-      "height": 116,
+      "height": 142,
       "selected": false,
       "positionAbsolute": {
         "x": 147.64638546803428,
@@ -100,8 +101,8 @@
       "id": "n2",
       "type": "ontologyNode",
       "position": {
-        "x": 119.43915640410273,
-        "y": 38.564570126646686
+        "x": 117.67863837697644,
+        "y": 62.3315634928518
       },
       "data": {
         "label": "A9_Archaeological_Excavation",
@@ -130,11 +131,11 @@
         ]
       },
       "width": 228,
-      "height": 116,
+      "height": 142,
       "selected": false,
       "positionAbsolute": {
-        "x": 119.43915640410273,
-        "y": 38.564570126646686
+        "x": 117.67863837697644,
+        "y": 62.3315634928518
       },
       "dragging": false
     },
@@ -143,7 +144,7 @@
       "type": "ontologyNode",
       "position": {
         "x": 566.9506034475205,
-        "y": -207.0054125682134
+        "y": -250.22020616889878
       },
       "data": {
         "label": "E42_Identifier",
@@ -172,139 +173,11 @@
         ]
       },
       "width": 170,
-      "height": 116,
+      "height": 142,
       "selected": false,
       "positionAbsolute": {
         "x": 566.9506034475205,
-        "y": -207.0054125682134
-      },
-      "dragging": false
-    },
-    {
-      "id": "n4",
-      "type": "ontologyNode",
-      "position": {
-        "x": 568.0267564875926,
-        "y": -69.85810464951092
-      },
-      "data": {
-        "label": "xsd:date",
-        "uri": "xsd:date",
-        "nodeType": "subject",
-        "rdfs_label": "xsd:date",
-        "nodeColor": "#86bcc8",
-        "mappedColumn": "Start",
-        "labelColumn": "Start",
-        "instanceLabel": "",
-        "isFreeNode": true,
-        "noPrefix": true,
-        "tableId": "tbl_5",
-        "tableRows": [
-          {
-            "Site": "Wadi al-Sirr",
-            "SiteID": "wadi_al_stirr",
-            "Short_form": "WS",
-            "Site_Child": "The Secret Place",
-            "Site_Child_ID": "the_secret_place",
-            "ShortForm_Child": "TSP",
-            "Activity": "Excavation of the Secret Place",
-            "Activity_id": "secret_place_excavation",
-            "Start": 1981,
-            "End": 1989
-          }
-        ]
-      },
-      "width": 170,
-      "height": 116,
-      "selected": false,
-      "positionAbsolute": {
-        "x": 568.0267564875926,
-        "y": -69.85810464951092
-      },
-      "dragging": false
-    },
-    {
-      "id": "n5",
-      "type": "ontologyNode",
-      "position": {
-        "x": 572.4687228285138,
-        "y": 88.9679748477555
-      },
-      "data": {
-        "label": "xsd:date",
-        "uri": "xsd:date",
-        "nodeType": "subject",
-        "rdfs_label": "xsd:date",
-        "nodeColor": "#86bcc8",
-        "mappedColumn": "End",
-        "labelColumn": "End",
-        "instanceLabel": "",
-        "isFreeNode": true,
-        "noPrefix": true,
-        "tableId": "tbl_5",
-        "tableRows": [
-          {
-            "Site": "Wadi al-Sirr",
-            "SiteID": "wadi_al_stirr",
-            "Short_form": "WS",
-            "Site_Child": "The Secret Place",
-            "Site_Child_ID": "the_secret_place",
-            "ShortForm_Child": "TSP",
-            "Activity": "Excavation of the Secret Place",
-            "Activity_id": "secret_place_excavation",
-            "Start": 1981,
-            "End": 1989
-          }
-        ]
-      },
-      "width": 170,
-      "height": 116,
-      "selected": false,
-      "positionAbsolute": {
-        "x": 572.4687228285138,
-        "y": 88.9679748477555
-      },
-      "dragging": false
-    },
-    {
-      "id": "n6",
-      "type": "ontologyNode",
-      "position": {
-        "x": 147.48516159981637,
-        "y": -366.7109326973351
-      },
-      "data": {
-        "label": "E27_Site",
-        "uri": "http://www.cidoc-crm.org/cidoc-crm/E27_Site",
-        "nodeType": "subject",
-        "rdfs_label": "Gelände",
-        "nodeColor": "#c78e66",
-        "mappedColumn": "SiteID",
-        "labelColumn": "Site",
-        "instanceLabel": "",
-        "noPrefix": false,
-        "tableId": "tbl_5",
-        "tableRows": [
-          {
-            "Site": "Wadi al-Sirr",
-            "SiteID": "wadi_al_stirr",
-            "Short_form": "WS",
-            "Site_Child": "The Secret Place",
-            "Site_Child_ID": "the_secret_place",
-            "ShortForm_Child": "TSP",
-            "Activity": "Excavation of the Secret Place",
-            "Activity_id": "secret_place_excavation",
-            "Start": 1981,
-            "End": 1989
-          }
-        ]
-      },
-      "width": 170,
-      "height": 116,
-      "selected": false,
-      "positionAbsolute": {
-        "x": 147.48516159981637,
-        "y": -366.7109326973351
+        "y": -250.22020616889878
       },
       "dragging": false
     },
@@ -352,7 +225,7 @@
         ]
       },
       "width": 215,
-      "height": 116,
+      "height": 142,
       "selected": false,
       "positionAbsolute": {
         "x": -271.6366766059721,
@@ -404,97 +277,11 @@
         ]
       },
       "width": 181,
-      "height": 116,
+      "height": 142,
       "selected": false,
       "positionAbsolute": {
         "x": -277.3508487785291,
         "y": 233.54086654894377
-      },
-      "dragging": false
-    },
-    {
-      "id": "n17",
-      "type": "ontologyNode",
-      "position": {
-        "x": -264.8684708990917,
-        "y": 658.2222016145784
-      },
-      "data": {
-        "label": "A7_Embedding",
-        "uri": "http://www.cidoc-crm.org/extensions/crmarchaeo/A7_Embedding",
-        "nodeType": "subject",
-        "rdfs_label": "Embedding",
-        "nodeColor": "#c78e66",
-        "mappedColumn": "ID_Embedding",
-        "labelColumn": "Artefact_Short",
-        "instanceLabel": "",
-        "noPrefix": false,
-        "tableId": "tbl_4",
-        "tableRows": [
-          {
-            "ID_Schicht": "SP-SO1-SU1001",
-            "ID_Embedding": "SP-SO1-SU1001-01_emb",
-            "Fundnummer": "SP-SO1-SU1001-01",
-            "Artefact_Short": "Artefact-1001",
-            "Material_ID": "vocabs:leather",
-            "Material": "Leather",
-            "Art_ID": "wikidata:whip",
-            "Art": "Whip, fragmented",
-            "FindNo_ID": "SP-SO1-SU1001-01_02042",
-            "Find_No": "FP_02042",
-            "Geometry_ID": "SP-SO1-SU1001-01_02042_geometry",
-            "Geometry": "\"Point Z (16.38034560249579 48.210088370741175 205.8)\""
-          },
-          {
-            "ID_Schicht": "SP-SO1-SU1002",
-            "ID_Embedding": "SP-SO1-SU1001-02_emb",
-            "Fundnummer": "SP-SO1-SU1001-02",
-            "Artefact_Short": "Artefact-1002",
-            "Material_ID": "vocabs:ceramic",
-            "Material": "Ceramic",
-            "Art_ID": "wikidata:ostraka",
-            "Art": "Ostraka, with ancient map",
-            "FindNo_ID": "SP-SO1-SU1001-02_02424",
-            "Find_No": "FP_02424",
-            "Geometry_ID": "SP-SO1-SU1001-02_02424_geometry",
-            "Geometry": "\"Point Z (16.38033369522551 48.2100782007972 205.6)\""
-          },
-          {
-            "ID_Schicht": "SP-SO1-SU1001",
-            "ID_Embedding": "SP-SO1-SU1002-01_emb",
-            "Fundnummer": "SP-SO1-SU1002-01",
-            "Artefact_Short": "Artefact-2001",
-            "Material_ID": "vocabs:gold",
-            "Material": "Gold",
-            "Art_ID": "wikidata:amulett",
-            "Art": "Amulett, with geometric décor",
-            "FindNo_ID": "SP-SO1-SU1002-01_04284",
-            "Find_No": "FP_04284",
-            "Geometry_ID": "SP-SO1-SU1002-01_04284_geometry",
-            "Geometry": "\"Point Z (16.381092246500952 48.209658340899914 204.2)\""
-          },
-          {
-            "ID_Schicht": "SP-SO1-SU1002",
-            "ID_Embedding": "SP-SO1-SU1002-02_emb",
-            "Fundnummer": "SP-SO1-SU1002-02",
-            "Artefact_Short": "Artefact-2002",
-            "Material_ID": "vocabs:terracotta",
-            "Material": "Terracotta",
-            "Art_ID": "wikidata:statuette",
-            "Art": "Statuett, anthropomorphic",
-            "FindNo_ID": "SP-SO1-SU1002-02_04802",
-            "Find_No": "FP_04802",
-            "Geometry_ID": "SP-SO1-SU1002-02_04802_geometry",
-            "Geometry": "\"Point Z (16.381096023999557 48.20966930748111 204.4)\""
-          }
-        ]
-      },
-      "width": 170,
-      "height": 116,
-      "selected": false,
-      "positionAbsolute": {
-        "x": -264.8684708990917,
-        "y": 658.2222016145784
       },
       "dragging": false
     },
@@ -542,7 +329,7 @@
         ]
       },
       "width": 170,
-      "height": 116,
+      "height": 142,
       "selected": false,
       "positionAbsolute": {
         "x": 58.629839927799026,
@@ -554,8 +341,8 @@
       "id": "n19",
       "type": "ontologyNode",
       "position": {
-        "x": -259.5251220019048,
-        "y": 839.7643327456107
+        "x": -260.878516031887,
+        "y": 762.3939335865216
       },
       "data": {
         "label": "E55_Type",
@@ -628,11 +415,11 @@
         ]
       },
       "width": 170,
-      "height": 116,
+      "height": 142,
       "selected": false,
       "positionAbsolute": {
-        "x": -259.5251220019048,
-        "y": 839.7643327456107
+        "x": -260.878516031887,
+        "y": 762.3939335865216
       },
       "dragging": false
     },
@@ -640,8 +427,8 @@
       "id": "n20",
       "type": "ontologyNode",
       "position": {
-        "x": 76.64136283479161,
-        "y": 655.300603053259
+        "x": 55.6926149805505,
+        "y": 557.6719450604685
       },
       "data": {
         "label": "E57_Material",
@@ -714,11 +501,11 @@
         ]
       },
       "width": 170,
-      "height": 116,
+      "height": 142,
       "selected": false,
       "positionAbsolute": {
-        "x": 76.64136283479161,
-        "y": 655.300603053259
+        "x": 55.6926149805505,
+        "y": 557.6719450604685
       },
       "dragging": false
     },
@@ -766,39 +553,256 @@
         ]
       },
       "width": 181,
-      "height": 116,
+      "height": 142,
       "positionAbsolute": {
         "x": -902.0355759450466,
         "y": 204.39677722299797
-      }
+      },
+      "selected": false
     },
     {
-      "id": "mid_1774733039627",
+      "id": "n24",
+      "type": "ontologyNode",
+      "position": {
+        "x": 144.6770704375412,
+        "y": -391.83803812201853
+      },
+      "data": {
+        "label": "crm:E27_Site",
+        "uri": "http://www.cidoc-crm.org/cidoc-crm/E27_Site",
+        "nodeType": "subject",
+        "rdfs_label": "Gelände",
+        "nodeColor": "#c78e66",
+        "mappedColumn": "SiteID",
+        "labelColumn": "Site",
+        "instanceLabel": "",
+        "noPrefix": false,
+        "explorerLabel": "",
+        "tableId": "tbl_2",
+        "tableRows": [
+          {
+            "Site": "Wadi al-Sirr",
+            "SiteID": "wadi_al_stirr",
+            "Short_form": "WS",
+            "Site_Child": "The Secret Place",
+            "Site_Child_ID": "the_secret_place",
+            "ShortForm_Child": "TSP",
+            "Activity": "Excavation of the Secret Place",
+            "Activity_id": "secret_place_excavation",
+            "Start": 1981,
+            "End": 1989
+          }
+        ]
+      },
+      "width": 170,
+      "height": 142,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 144.6770704375412,
+        "y": -391.83803812201853
+      },
+      "dragging": false
+    },
+    {
+      "id": "n25",
+      "type": "ontologyNode",
+      "position": {
+        "x": 569.8421739885435,
+        "y": -68.78298014434175
+      },
+      "data": {
+        "label": "xsd:gYear",
+        "uri": "http://www.w3.org/2001/XMLSchema#gYear",
+        "nodeType": "subject",
+        "rdfs_label": null,
+        "nodeColor": "#ffffff",
+        "mappedColumn": "Start",
+        "labelColumn": "Start",
+        "instanceLabel": "",
+        "noPrefix": true,
+        "explorerLabel": "",
+        "tableId": "tbl_2",
+        "tableRows": [
+          {
+            "Site": "Wadi al-Sirr",
+            "SiteID": "wadi_al_stirr",
+            "Short_form": "WS",
+            "Site_Child": "The Secret Place",
+            "Site_Child_ID": "the_secret_place",
+            "ShortForm_Child": "TSP",
+            "Activity": "Excavation of the Secret Place",
+            "Activity_id": "secret_place_excavation",
+            "Start": 1981,
+            "End": 1989
+          }
+        ]
+      },
+      "width": 170,
+      "height": 142,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 569.8421739885435,
+        "y": -68.78298014434175
+      },
+      "dragging": false
+    },
+    {
+      "id": "n26",
+      "type": "ontologyNode",
+      "position": {
+        "x": 572.4829510292329,
+        "y": 116.07141270392015
+      },
+      "data": {
+        "label": "xsd:gYear",
+        "uri": "http://www.w3.org/2001/XMLSchema#gYear",
+        "nodeType": "subject",
+        "rdfs_label": null,
+        "nodeColor": "#ffffff",
+        "mappedColumn": "End",
+        "labelColumn": "End",
+        "instanceLabel": "",
+        "noPrefix": false,
+        "explorerLabel": "",
+        "tableId": "tbl_2",
+        "tableRows": [
+          {
+            "Site": "Wadi al-Sirr",
+            "SiteID": "wadi_al_stirr",
+            "Short_form": "WS",
+            "Site_Child": "The Secret Place",
+            "Site_Child_ID": "the_secret_place",
+            "ShortForm_Child": "TSP",
+            "Activity": "Excavation of the Secret Place",
+            "Activity_id": "secret_place_excavation",
+            "Start": 1981,
+            "End": 1989
+          }
+        ]
+      },
+      "width": 170,
+      "height": 142,
+      "selected": false,
+      "positionAbsolute": {
+        "x": 572.4829510292329,
+        "y": 116.07141270392015
+      },
+      "dragging": false
+    },
+    {
+      "id": "n27",
+      "type": "ontologyNode",
+      "position": {
+        "x": -271.79599819881753,
+        "y": 523.2769532069617
+      },
+      "data": {
+        "label": "crm:E19_Physical_Object",
+        "uri": "http://www.cidoc-crm.org/cidoc-crm/E19_Physical_Object",
+        "nodeType": "subject",
+        "rdfs_label": "Materieller Gegenstand",
+        "nodeColor": "#c78e66",
+        "mappedColumn": "Fundnummer",
+        "labelColumn": "Artefact_Short",
+        "instanceLabel": "",
+        "noPrefix": false,
+        "explorerLabel": "",
+        "tableId": "tbl_1",
+        "tableRows": [
+          {
+            "ID_Schicht": "SP-SO1-SU1001",
+            "ID_Embedding": "SP-SO1-SU1001-01_emb",
+            "Fundnummer": "SP-SO1-SU1001-01",
+            "Artefact_Short": "Artefact-1001",
+            "Material_ID": "vocabs:leather",
+            "Material": "Leather",
+            "Art_ID": "wikidata:whip",
+            "Art": "Whip, fragmented",
+            "FindNo_ID": "SP-SO1-SU1001-01_02042",
+            "Find_No": "FP_02042",
+            "Geometry_ID": "SP-SO1-SU1001-01_02042_geometry",
+            "Geometry": "\"Point Z (16.38034560249579 48.210088370741175 205.8)\""
+          },
+          {
+            "ID_Schicht": "SP-SO1-SU1001",
+            "ID_Embedding": "SP-SO1-SU1001-02_emb",
+            "Fundnummer": "SP-SO1-SU1001-02",
+            "Artefact_Short": "Artefact-1002",
+            "Material_ID": "vocabs:ceramic",
+            "Material": "Ceramic",
+            "Art_ID": "wikidata:ostraka",
+            "Art": "Ostraka, with ancient map",
+            "FindNo_ID": "SP-SO1-SU1001-02_02424",
+            "Find_No": "FP_02424",
+            "Geometry_ID": "SP-SO1-SU1001-02_02424_geometry",
+            "Geometry": "\"Point Z (16.38033369522551 48.2100782007972 205.6)\""
+          },
+          {
+            "ID_Schicht": "SP-SO1-SU1002",
+            "ID_Embedding": "SP-SO1-SU1002-01_emb",
+            "Fundnummer": "SP-SO1-SU1002-01",
+            "Artefact_Short": "Artefact-2001",
+            "Material_ID": "vocabs:gold",
+            "Material": "Gold",
+            "Art_ID": "wikidata:amulett",
+            "Art": "Amulett, with geometric décor",
+            "FindNo_ID": "SP-SO1-SU1002-01_04284",
+            "Find_No": "FP_04284",
+            "Geometry_ID": "SP-SO1-SU1002-01_04284_geometry",
+            "Geometry": "\"Point Z (16.381092246500952 48.209658340899914 204.2)\""
+          },
+          {
+            "ID_Schicht": "SP-SO1-SU1002",
+            "ID_Embedding": "SP-SO1-SU1002-02_emb",
+            "Fundnummer": "SP-SO1-SU1002-02",
+            "Artefact_Short": "Artefact-2002",
+            "Material_ID": "vocabs:terracotta",
+            "Material": "Terracotta",
+            "Art_ID": "wikidata:statuette",
+            "Art": "Statuett, anthropomorphic",
+            "FindNo_ID": "SP-SO1-SU1002-02_04802",
+            "Find_No": "FP_04802",
+            "Geometry_ID": "SP-SO1-SU1002-02_04802_geometry",
+            "Geometry": "\"Point Z (16.381096023999557 48.20966930748111 204.4)\""
+          }
+        ]
+      },
+      "width": 194,
+      "height": 142,
+      "selected": false,
+      "positionAbsolute": {
+        "x": -271.79599819881753,
+        "y": 523.2769532069617
+      },
+      "dragging": false
+    },
+    {
+      "id": "mid_1785240512076",
       "type": "dotOneMidpoint",
       "position": {
         "x": -506.19321236178786,
-        "y": 269.9688218859709
+        "y": 282.9688218859709
       },
       "data": {
-        "parentEdgeLabel": "AP11_has_physical_relation_to"
+        "parentEdgeLabel": "crmarchaeo:AP11_has_physical_relation_to"
       },
       "draggable": true,
       "width": 14,
       "height": 14,
       "positionAbsolute": {
         "x": -506.19321236178786,
-        "y": 269.9688218859709
+        "y": 282.9688218859709
       }
     },
     {
-      "id": "n23",
+      "id": "n28",
       "type": "ontologyNode",
       "position": {
-        "x": -574.9711599249492,
-        "y": 402.3383999245512
+        "x": -583.5760562188777,
+        "y": 414.0033666727163
       },
       "data": {
-        "label": "E55_Type",
+        "label": "crm:E55_Type",
         "uri": "http://www.cidoc-crm.org/cidoc-crm/E55_Type",
         "nodeType": "object",
         "rdfs_label": "Typus",
@@ -807,7 +811,8 @@
         "labelColumn": "Strat_rel",
         "instanceLabel": "",
         "noPrefix": false,
-        "tableId": "tbl_12",
+        "explorerLabel": "",
+        "tableId": "tbl_3",
         "tableRows": [
           {
             "Excavation_ID": "secret_place_excavation",
@@ -834,11 +839,11 @@
         ]
       },
       "width": 170,
-      "height": 116,
-      "selected": false,
+      "height": 142,
+      "selected": true,
       "positionAbsolute": {
-        "x": -574.9711599249492,
-        "y": 402.3383999245512
+        "x": -583.5760562188777,
+        "y": 414.0033666727163
       },
       "dragging": false
     }
@@ -847,28 +852,29 @@
     {
       "focusable": true,
       "style": {
-        "stroke": "#a8326a",
+        "stroke": "#db2777",
         "strokeWidth": 1.5
       },
-      "id": "e_n1_n2",
-      "source": "n1",
-      "target": "n2",
+      "id": "e_n24_n1_1785239831951",
+      "source": "n24",
+      "target": "n1",
       "sourceHandle": "b-s",
       "targetHandle": "t-t",
-      "label": "AP3i_was_investigated_by",
+      "label": "crm:P46_is_composed_of",
       "data": {
-        "label": "AP3i_was_investigated_by",
-        "propertyUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP3i_was_investigated_by",
-        "joinColumn": null
+        "label": "crm:P46_is_composed_of",
+        "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P46_is_composed_of",
+        "joinColumnSource": null,
+        "joinColumnTarget": null
       },
       "markerEnd": {
         "type": "arrowclosed",
-        "color": "#a8326a",
+        "color": "#db2777",
         "width": 14,
         "height": 14
       },
       "labelStyle": {
-        "fill": "#a8326a",
+        "fill": "#db2777",
         "fontFamily": "'IBM Plex Mono',monospace",
         "fontSize": 10
       },
@@ -886,28 +892,29 @@
     {
       "focusable": true,
       "style": {
-        "stroke": "#a8326a",
+        "stroke": "#db2777",
         "strokeWidth": 1.5
       },
-      "id": "e_n1_n3_1774645983332",
+      "id": "e_n1_n3_1785239865855",
       "source": "n1",
       "target": "n3",
       "sourceHandle": "r-s",
       "targetHandle": "l-t",
-      "label": "P48_has_preferred_identifier",
+      "label": "crm:P48_has_preferred_identifier",
       "data": {
-        "label": "P48_has_preferred_identifier",
+        "label": "crm:P48_has_preferred_identifier",
         "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P48_has_preferred_identifier",
-        "joinColumn": null
+        "joinColumnSource": null,
+        "joinColumnTarget": null
       },
       "markerEnd": {
         "type": "arrowclosed",
-        "color": "#a8326a",
+        "color": "#db2777",
         "width": 14,
         "height": 14
       },
       "labelStyle": {
-        "fill": "#a8326a",
+        "fill": "#db2777",
         "fontFamily": "'IBM Plex Mono',monospace",
         "fontSize": 10
       },
@@ -925,424 +932,29 @@
     {
       "focusable": true,
       "style": {
-        "stroke": "#a8326a",
+        "stroke": "#db2777",
         "strokeWidth": 1.5
       },
-      "id": "e_n2_n4_1774646027111",
-      "source": "n2",
-      "target": "n4",
-      "sourceHandle": "r-s",
-      "targetHandle": "l-t",
-      "label": "AP24_starts",
-      "data": {
-        "label": "AP24_starts",
-        "propertyUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP24_starts",
-        "joinColumn": null
-      },
-      "markerEnd": {
-        "type": "arrowclosed",
-        "color": "#a8326a",
-        "width": 14,
-        "height": 14
-      },
-      "labelStyle": {
-        "fill": "#a8326a",
-        "fontFamily": "'IBM Plex Mono',monospace",
-        "fontSize": 10
-      },
-      "labelBgStyle": {
-        "fill": "#ffffff",
-        "fillOpacity": 0.95
-      },
-      "labelBgPadding": [
-        4,
-        6
-      ],
-      "labelBgBorderRadius": 3,
-      "selected": false
-    },
-    {
-      "focusable": true,
-      "style": {
-        "stroke": "#a8326a",
-        "strokeWidth": 1.5
-      },
-      "id": "e_n2_n5_1774646054298",
-      "source": "n2",
-      "target": "n5",
-      "sourceHandle": "r-s",
-      "targetHandle": "l-t",
-      "label": "AP23_finishes",
-      "data": {
-        "label": "AP23_finishes",
-        "propertyUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP23_finishes",
-        "joinColumn": null
-      },
-      "markerEnd": {
-        "type": "arrowclosed",
-        "color": "#a8326a",
-        "width": 14,
-        "height": 14
-      },
-      "labelStyle": {
-        "fill": "#a8326a",
-        "fontFamily": "'IBM Plex Mono',monospace",
-        "fontSize": 10
-      },
-      "labelBgStyle": {
-        "fill": "#ffffff",
-        "fillOpacity": 0.95
-      },
-      "labelBgPadding": [
-        4,
-        6
-      ],
-      "labelBgBorderRadius": 3,
-      "selected": false
-    },
-    {
-      "focusable": true,
-      "style": {
-        "stroke": "#a8326a",
-        "strokeWidth": 1.5
-      },
-      "id": "e_n6_n1_1774646080999",
-      "source": "n6",
-      "target": "n1",
-      "sourceHandle": "b-s",
-      "targetHandle": "t-t",
-      "label": "P45_consists_of",
-      "data": {
-        "label": "P45_consists_of",
-        "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P45_consists_of",
-        "joinColumn": null
-      },
-      "markerEnd": {
-        "type": "arrowclosed",
-        "color": "#a8326a",
-        "width": 14,
-        "height": 14
-      },
-      "labelStyle": {
-        "fill": "#a8326a",
-        "fontFamily": "'IBM Plex Mono',monospace",
-        "fontSize": 10
-      },
-      "labelBgStyle": {
-        "fill": "#ffffff",
-        "fillOpacity": 0.95
-      },
-      "labelBgPadding": [
-        4,
-        6
-      ],
-      "labelBgBorderRadius": 3,
-      "selected": false
-    },
-    {
-      "focusable": true,
-      "style": {
-        "stroke": "#a8326a",
-        "strokeWidth": 1.5
-      },
-      "id": "e_n7_n8",
-      "source": "n7",
-      "target": "n8",
-      "sourceHandle": "b-s",
-      "targetHandle": "t-t",
-      "label": "P46_is_composed_of",
-      "data": {
-        "label": "P46_is_composed_of",
-        "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P46_is_composed_of",
-        "joinColumn": null
-      },
-      "markerEnd": {
-        "type": "arrowclosed",
-        "color": "#a8326a",
-        "width": 14,
-        "height": 14
-      },
-      "labelStyle": {
-        "fill": "#a8326a",
-        "fontFamily": "'IBM Plex Mono',monospace",
-        "fontSize": 10
-      },
-      "labelBgStyle": {
-        "fill": "#ffffff",
-        "fillOpacity": 0.95
-      },
-      "labelBgPadding": [
-        4,
-        6
-      ],
-      "labelBgBorderRadius": 3,
-      "selected": false
-    },
-    {
-      "focusable": true,
-      "style": {
-        "stroke": "#a8326a",
-        "strokeWidth": 1.5
-      },
-      "id": "e_n8_n17_1774723518052",
-      "source": "n8",
-      "target": "n17",
-      "sourceHandle": "b-s",
-      "targetHandle": "t-t",
-      "label": "AP19i_contains_embedding",
-      "data": {
-        "label": "AP19i_contains_embedding",
-        "propertyUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP19i_contains_embedding",
-        "joinColumn": "ID_Schicht"
-      },
-      "markerEnd": {
-        "type": "arrowclosed",
-        "color": "#a8326a",
-        "width": 14,
-        "height": 14
-      },
-      "labelStyle": {
-        "fill": "#a8326a",
-        "fontFamily": "'IBM Plex Mono',monospace",
-        "fontSize": 10
-      },
-      "labelBgStyle": {
-        "fill": "#ffffff",
-        "fillOpacity": 0.95
-      },
-      "labelBgPadding": [
-        4,
-        6
-      ],
-      "labelBgBorderRadius": 3,
-      "selected": false
-    },
-    {
-      "focusable": true,
-      "style": {
-        "stroke": "#a8326a",
-        "strokeWidth": 1.5
-      },
-      "id": "e_n8_n18_1774723538450",
-      "source": "n8",
-      "target": "n18",
-      "sourceHandle": "r-s",
-      "targetHandle": "l-t",
-      "label": "P2_has_type",
-      "data": {
-        "label": "P2_has_type",
-        "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P2_has_type",
-        "joinColumn": null
-      },
-      "markerEnd": {
-        "type": "arrowclosed",
-        "color": "#a8326a",
-        "width": 14,
-        "height": 14
-      },
-      "labelStyle": {
-        "fill": "#a8326a",
-        "fontFamily": "'IBM Plex Mono',monospace",
-        "fontSize": 10
-      },
-      "labelBgStyle": {
-        "fill": "#ffffff",
-        "fillOpacity": 0.95
-      },
-      "labelBgPadding": [
-        4,
-        6
-      ],
-      "labelBgBorderRadius": 3,
-      "selected": false
-    },
-    {
-      "focusable": true,
-      "style": {
-        "stroke": "#a8326a",
-        "strokeWidth": 1.5
-      },
-      "id": "e_n17_n19_1774723558459",
-      "source": "n17",
-      "target": "n19",
-      "sourceHandle": "b-s",
-      "targetHandle": "t-t",
-      "label": "P2_has_type",
-      "data": {
-        "label": "P2_has_type",
-        "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P2_has_type",
-        "joinColumn": null
-      },
-      "markerEnd": {
-        "type": "arrowclosed",
-        "color": "#a8326a",
-        "width": 14,
-        "height": 14
-      },
-      "labelStyle": {
-        "fill": "#a8326a",
-        "fontFamily": "'IBM Plex Mono',monospace",
-        "fontSize": 10
-      },
-      "labelBgStyle": {
-        "fill": "#ffffff",
-        "fillOpacity": 0.95
-      },
-      "labelBgPadding": [
-        4,
-        6
-      ],
-      "labelBgBorderRadius": 3,
-      "selected": false
-    },
-    {
-      "focusable": true,
-      "style": {
-        "stroke": "#a8326a",
-        "strokeWidth": 1.5
-      },
-      "id": "e_n17_n20_1774723667090",
-      "source": "n17",
-      "target": "n20",
-      "sourceHandle": "r-s",
-      "targetHandle": "l-t",
-      "label": "P45_consists_of",
-      "data": {
-        "label": "P45_consists_of",
-        "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P45_consists_of",
-        "joinColumn": null
-      },
-      "markerEnd": {
-        "type": "arrowclosed",
-        "color": "#a8326a",
-        "width": 14,
-        "height": 14
-      },
-      "labelStyle": {
-        "fill": "#a8326a",
-        "fontFamily": "'IBM Plex Mono',monospace",
-        "fontSize": 10
-      },
-      "labelBgStyle": {
-        "fill": "#ffffff",
-        "fillOpacity": 0.95
-      },
-      "labelBgPadding": [
-        4,
-        6
-      ],
-      "labelBgBorderRadius": 3,
-      "selected": false
-    },
-    {
-      "focusable": true,
-      "style": {
-        "stroke": "#a8326a",
-        "strokeWidth": 1.5
-      },
-      "id": "e_n1_n7_1774725841466",
+      "id": "e_n1_n2_1785239901974",
       "source": "n1",
-      "target": "n7",
-      "sourceHandle": "l-s",
-      "targetHandle": "r-t",
-      "label": "P46_is_composed_of",
+      "target": "n2",
+      "sourceHandle": "b-s",
+      "targetHandle": "t-t",
+      "label": "crmarchaeo:AP3i_was_investigated_by",
       "data": {
-        "label": "P46_is_composed_of",
-        "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P46_is_composed_of",
-        "joinColumn": null
+        "label": "crmarchaeo:AP3i_was_investigated_by",
+        "propertyUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP3i_was_investigated_by",
+        "joinColumnSource": null,
+        "joinColumnTarget": null
       },
       "markerEnd": {
         "type": "arrowclosed",
-        "color": "#a8326a",
+        "color": "#db2777",
         "width": 14,
         "height": 14
       },
       "labelStyle": {
-        "fill": "#a8326a",
-        "fontFamily": "'IBM Plex Mono',monospace",
-        "fontSize": 10
-      },
-      "labelBgStyle": {
-        "fill": "#ffffff",
-        "fillOpacity": 0.95
-      },
-      "labelBgPadding": [
-        4,
-        6
-      ],
-      "labelBgBorderRadius": 3,
-      "selected": false
-    },
-    {
-      "focusable": true,
-      "style": {
-        "stroke": "#a8326a",
-        "strokeWidth": 1.5
-      },
-      "id": "e_n2_n7_1774726288746",
-      "source": "n2",
-      "target": "n7",
-      "sourceHandle": "l-s",
-      "targetHandle": "r-t",
-      "label": "AP3_investigated",
-      "data": {
-        "label": "AP3_investigated",
-        "propertyUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP3_investigated",
-        "joinColumn": "Excavation_ID"
-      },
-      "markerEnd": {
-        "type": "arrowclosed",
-        "color": "#a8326a",
-        "width": 14,
-        "height": 14
-      },
-      "labelStyle": {
-        "fill": "#a8326a",
-        "fontFamily": "'IBM Plex Mono',monospace",
-        "fontSize": 10
-      },
-      "labelBgStyle": {
-        "fill": "#ffffff",
-        "fillOpacity": 0.95
-      },
-      "labelBgPadding": [
-        4,
-        6
-      ],
-      "labelBgBorderRadius": 3,
-      "selected": false
-    },
-    {
-      "focusable": true,
-      "style": {
-        "stroke": "#a8326a",
-        "strokeWidth": 1.5
-      },
-      "id": "e_n8_n22_1774733012918_seg1",
-      "source": "n8",
-      "target": "mid_1774733039627",
-      "sourceHandle": "l-s",
-      "targetHandle": "mid-t-r",
-      "label": "AP11_has_physical_relation_to",
-      "data": {
-        "label": "AP11_has_physical_relation_to",
-        "propertyUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP11_has_physical_relation_to",
-        "joinColumn": null,
-        "isSplitSeg1": true,
-        "originalTarget": "n22",
-        "dotOneProp": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP11.1_has_type",
-        "dotOnePropUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP11.1_has_type",
-        "dotOneNodeId": "n23",
-        "dotOneEdgeId": "e_n8_n22_1774733012918_dot1"
-      },
-      "markerEnd": {
-        "type": "arrowclosed",
-        "color": "#a8326a",
-        "width": 14,
-        "height": 14
-      },
-      "labelStyle": {
-        "fill": "#a8326a",
+        "fill": "#db2777",
         "fontFamily": "'IBM Plex Mono',monospace",
         "fontSize": 10
       },
@@ -1359,11 +971,419 @@
     {
       "focusable": true,
       "style": {
-        "stroke": "#a8326a",
+        "stroke": "#db2777",
         "strokeWidth": 1.5
       },
-      "id": "e_n8_n22_1774733012918_seg2",
-      "source": "mid_1774733039627",
+      "id": "e_n2_n25_1785239944817",
+      "source": "n2",
+      "target": "n25",
+      "sourceHandle": "r-s",
+      "targetHandle": "l-t",
+      "label": "crmarchaeo:AP24_starts",
+      "data": {
+        "label": "crmarchaeo:AP24_starts",
+        "propertyUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP24_starts",
+        "joinColumnSource": null,
+        "joinColumnTarget": null
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#db2777",
+        "width": 14,
+        "height": 14
+      },
+      "labelStyle": {
+        "fill": "#db2777",
+        "fontFamily": "'IBM Plex Mono',monospace",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#ffffff",
+        "fillOpacity": 0.95
+      },
+      "labelBgPadding": [
+        4,
+        6
+      ],
+      "labelBgBorderRadius": 3
+    },
+    {
+      "focusable": true,
+      "style": {
+        "stroke": "#db2777",
+        "strokeWidth": 1.5
+      },
+      "id": "e_n2_n26_1785239976422",
+      "source": "n2",
+      "target": "n26",
+      "sourceHandle": "r-s",
+      "targetHandle": "l-t",
+      "label": "crmarchaeo:AP23_finishes",
+      "data": {
+        "label": "crmarchaeo:AP23_finishes",
+        "propertyUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP23_finishes",
+        "joinColumnSource": null,
+        "joinColumnTarget": null
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#db2777",
+        "width": 14,
+        "height": 14
+      },
+      "labelStyle": {
+        "fill": "#db2777",
+        "fontFamily": "'IBM Plex Mono',monospace",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#ffffff",
+        "fillOpacity": 0.95
+      },
+      "labelBgPadding": [
+        4,
+        6
+      ],
+      "labelBgBorderRadius": 3
+    },
+    {
+      "focusable": true,
+      "style": {
+        "stroke": "#db2777",
+        "strokeWidth": 1.5
+      },
+      "id": "e_n1_n7_1785240002238",
+      "source": "n1",
+      "target": "n7",
+      "sourceHandle": "l-s",
+      "targetHandle": "r-t",
+      "label": "crm:P46_is_composed_of",
+      "data": {
+        "label": "crm:P46_is_composed_of",
+        "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P46_is_composed_of",
+        "joinColumnSource": "Activity_id",
+        "joinColumnTarget": "Excavation_ID",
+        "noInverse": false,
+        "inversePropertyUri": "",
+        "explorerLabel": ""
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#db2777",
+        "width": 14,
+        "height": 14
+      },
+      "labelStyle": {
+        "fill": "#db2777",
+        "fontFamily": "'IBM Plex Mono',monospace",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#ffffff",
+        "fillOpacity": 0.95
+      },
+      "labelBgPadding": [
+        4,
+        6
+      ],
+      "labelBgBorderRadius": 3,
+      "selected": false
+    },
+    {
+      "focusable": true,
+      "style": {
+        "stroke": "#db2777",
+        "strokeWidth": 1.5
+      },
+      "id": "e_n2_n7_1785240105301",
+      "source": "n2",
+      "target": "n7",
+      "sourceHandle": "l-s",
+      "targetHandle": "r-t",
+      "label": "crmarchaeo:AP3_investigated",
+      "data": {
+        "label": "crmarchaeo:AP3_investigated",
+        "propertyUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP3_investigated",
+        "joinColumnSource": "Activity_id",
+        "joinColumnTarget": "Excavation_ID",
+        "noInverse": false,
+        "inversePropertyUri": "",
+        "explorerLabel": ""
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#db2777",
+        "width": 14,
+        "height": 14
+      },
+      "labelStyle": {
+        "fill": "#db2777",
+        "fontFamily": "'IBM Plex Mono',monospace",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#ffffff",
+        "fillOpacity": 0.95
+      },
+      "labelBgPadding": [
+        4,
+        6
+      ],
+      "labelBgBorderRadius": 3,
+      "selected": false
+    },
+    {
+      "focusable": true,
+      "style": {
+        "stroke": "#db2777",
+        "strokeWidth": 1.5
+      },
+      "id": "e_n7_n8_1785240137397",
+      "source": "n7",
+      "target": "n8",
+      "sourceHandle": "b-s",
+      "targetHandle": "t-t",
+      "label": "crm:P46_is_composed_of",
+      "data": {
+        "label": "crm:P46_is_composed_of",
+        "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P46_is_composed_of",
+        "joinColumnSource": null,
+        "joinColumnTarget": null
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#db2777",
+        "width": 14,
+        "height": 14
+      },
+      "labelStyle": {
+        "fill": "#db2777",
+        "fontFamily": "'IBM Plex Mono',monospace",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#ffffff",
+        "fillOpacity": 0.95
+      },
+      "labelBgPadding": [
+        4,
+        6
+      ],
+      "labelBgBorderRadius": 3
+    },
+    {
+      "focusable": true,
+      "style": {
+        "stroke": "#db2777",
+        "strokeWidth": 1.5
+      },
+      "id": "e_n8_n18_1785240157213",
+      "source": "n8",
+      "target": "n18",
+      "sourceHandle": "r-s",
+      "targetHandle": "l-t",
+      "label": "crm:P2_has_type",
+      "data": {
+        "label": "crm:P2_has_type",
+        "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P2_has_type",
+        "joinColumnSource": null,
+        "joinColumnTarget": null
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#db2777",
+        "width": 14,
+        "height": 14
+      },
+      "labelStyle": {
+        "fill": "#db2777",
+        "fontFamily": "'IBM Plex Mono',monospace",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#ffffff",
+        "fillOpacity": 0.95
+      },
+      "labelBgPadding": [
+        4,
+        6
+      ],
+      "labelBgBorderRadius": 3
+    },
+    {
+      "focusable": true,
+      "style": {
+        "stroke": "#db2777",
+        "strokeWidth": 1.5
+      },
+      "id": "e_n8_n27_1785240348325",
+      "source": "n8",
+      "target": "n27",
+      "sourceHandle": "b-s",
+      "targetHandle": "t-t",
+      "label": "crmarchaeo:AP21_contains",
+      "data": {
+        "label": "crmarchaeo:AP21_contains",
+        "propertyUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP21_contains",
+        "joinColumnSource": "StratigraphicalUnit",
+        "joinColumnTarget": "ID_Schicht",
+        "noInverse": false,
+        "inversePropertyUri": "",
+        "explorerLabel": ""
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#db2777",
+        "width": 14,
+        "height": 14
+      },
+      "labelStyle": {
+        "fill": "#db2777",
+        "fontFamily": "'IBM Plex Mono',monospace",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#ffffff",
+        "fillOpacity": 0.95
+      },
+      "labelBgPadding": [
+        4,
+        6
+      ],
+      "labelBgBorderRadius": 3,
+      "selected": false
+    },
+    {
+      "focusable": true,
+      "style": {
+        "stroke": "#db2777",
+        "strokeWidth": 1.5
+      },
+      "id": "e_n27_n20_1785240429484",
+      "source": "n27",
+      "target": "n20",
+      "sourceHandle": "r-s",
+      "targetHandle": "l-t",
+      "label": "crm:P45_consists_of",
+      "data": {
+        "label": "crm:P45_consists_of",
+        "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P45_consists_of",
+        "joinColumnSource": null,
+        "joinColumnTarget": null
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#db2777",
+        "width": 14,
+        "height": 14
+      },
+      "labelStyle": {
+        "fill": "#db2777",
+        "fontFamily": "'IBM Plex Mono',monospace",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#ffffff",
+        "fillOpacity": 0.95
+      },
+      "labelBgPadding": [
+        4,
+        6
+      ],
+      "labelBgBorderRadius": 3
+    },
+    {
+      "focusable": true,
+      "style": {
+        "stroke": "#db2777",
+        "strokeWidth": 1.5
+      },
+      "id": "e_n27_n19_1785240438899",
+      "source": "n27",
+      "target": "n19",
+      "sourceHandle": "b-s",
+      "targetHandle": "t-t",
+      "label": "crm:P2_has_type",
+      "data": {
+        "label": "crm:P2_has_type",
+        "propertyUri": "http://www.cidoc-crm.org/cidoc-crm/P2_has_type",
+        "joinColumnSource": null,
+        "joinColumnTarget": null
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#db2777",
+        "width": 14,
+        "height": 14
+      },
+      "labelStyle": {
+        "fill": "#db2777",
+        "fontFamily": "'IBM Plex Mono',monospace",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#ffffff",
+        "fillOpacity": 0.95
+      },
+      "labelBgPadding": [
+        4,
+        6
+      ],
+      "labelBgBorderRadius": 3
+    },
+    {
+      "focusable": true,
+      "style": {
+        "stroke": "#db2777",
+        "strokeWidth": 1.5
+      },
+      "id": "e_n8_n22_1785240461420_seg1",
+      "source": "n8",
+      "target": "mid_1785240512076",
+      "sourceHandle": "l-s",
+      "targetHandle": "mid-t-r",
+      "label": "crmarchaeo:AP11_has_physical_relation_to",
+      "data": {
+        "label": "crmarchaeo:AP11_has_physical_relation_to",
+        "propertyUri": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP11_has_physical_relation_to",
+        "joinColumnSource": null,
+        "joinColumnTarget": null,
+        "isSplitSeg1": true,
+        "originalTarget": "n22",
+        "dotOneProp": "crmarchaeo:AP11.1_has_type",
+        "dotOnePropUri": "crmarchaeo:AP11.1_has_type",
+        "dotOneNodeId": "n28",
+        "dotOneEdgeId": "e_n8_n22_1785240461420_dot1"
+      },
+      "markerEnd": {
+        "type": "arrowclosed",
+        "color": "#db2777",
+        "width": 14,
+        "height": 14
+      },
+      "labelStyle": {
+        "fill": "#db2777",
+        "fontFamily": "'IBM Plex Mono',monospace",
+        "fontSize": 10
+      },
+      "labelBgStyle": {
+        "fill": "#ffffff",
+        "fillOpacity": 0.95
+      },
+      "labelBgPadding": [
+        4,
+        6
+      ],
+      "labelBgBorderRadius": 3
+    },
+    {
+      "focusable": true,
+      "style": {
+        "stroke": "#db2777",
+        "strokeWidth": 1.5
+      },
+      "id": "e_n8_n22_1785240461420_seg2",
+      "source": "mid_1785240512076",
       "target": "n22",
       "sourceHandle": "mid-s-l",
       "targetHandle": "r-t",
@@ -1373,7 +1393,7 @@
       },
       "markerEnd": {
         "type": "arrowclosed",
-        "color": "#a8326a",
+        "color": "#db2777",
         "width": 14,
         "height": 14
       }
@@ -1381,28 +1401,28 @@
     {
       "focusable": true,
       "style": {
-        "stroke": "#a8326a",
+        "stroke": "#db2777",
         "strokeWidth": 1.2,
         "strokeDasharray": "6 3"
       },
-      "id": "e_n8_n22_1774733012918_dot1",
-      "source": "mid_1774733039627",
-      "target": "n23",
+      "id": "e_n8_n22_1785240461420_dot1",
+      "source": "mid_1785240512076",
+      "target": "n28",
       "sourceHandle": "dot-s",
       "targetHandle": "t-t",
-      "label": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP11.1_has_type",
+      "label": "crmarchaeo:AP11.1_has_type",
       "data": {
-        "label": "http://www.cidoc-crm.org/extensions/crmarchaeo/AP11.1_has_type",
+        "label": "crmarchaeo:AP11.1_has_type",
         "isDotOne": true
       },
       "markerEnd": {
         "type": "arrowclosed",
-        "color": "#a8326a",
+        "color": "#db2777",
         "width": 12,
         "height": 12
       },
       "labelStyle": {
-        "fill": "#a8326a",
+        "fill": "#db2777",
         "fontFamily": "'IBM Plex Mono',monospace",
         "fontSize": 9
       },
@@ -1414,8 +1434,7 @@
         3,
         5
       ],
-      "labelBgBorderRadius": 3,
-      "selected": false
+      "labelBgBorderRadius": 3
     }
   ]
 }

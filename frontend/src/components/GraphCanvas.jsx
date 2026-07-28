@@ -193,7 +193,7 @@ export default function GraphCanvas({ onNodeClick, pendingEdge, setPendingEdge, 
         flexShrink: 0,
       }}>
         <span style={{ fontSize: 10, color: 'var(--text-muted)', flex: 1, fontFamily: 'var(--mono)' }}>
-          {nodes.length} Nodes · {edges.length} Kanten
+          {nodes.length} Nodes · {edges.length} Edges
         </span>
         <button className="btn-ghost" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 11 }} onClick={handleExportGraphML}>
           <Download size={11} /> GraphML

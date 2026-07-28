@@ -69,14 +69,14 @@ function SearchableDropdown({ placeholder, items, value, onChange, disabled, loa
             width: '100%', textAlign: 'left', padding: '6px 12px',
             borderRadius: 0, display: 'flex', flexDirection: 'column', gap: 2,
             background: item.uri === value ? 'var(--accent-glow)' : undefined,
-            borderLeft: isWidened ? '2px solid #d48c1a' : isInherited ? '2px solid var(--border-bright)' : '2px solid transparent',
+            borderLeft: isWidened ? '2px solid #a37200' : isInherited ? '2px solid var(--border-bright)' : '2px solid transparent',
           }}
           onClick={() => { onChange(item); setSearch(''); setOpen(false); setInfoUri(null) }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={{
               fontFamily: 'var(--mono)', fontSize: 11,
-              color: item.uri === value ? 'var(--accent)' : (isWidened ? '#d48c1a' : isInherited ? 'var(--text-dim)' : 'var(--text)'),
+              color: item.uri === value ? 'var(--accent)' : (isWidened ? '#a37200' : isInherited ? 'var(--text-dim)' : 'var(--text)'),
             }}>
               {item.label}
             </span>
@@ -100,7 +100,7 @@ function SearchableDropdown({ placeholder, items, value, onChange, disabled, loa
               </span>
             )}
             {isWidened && (
-              <span style={{ fontSize: 9, color: '#d48c1a', background: 'rgba(255,179,0,0.1)', padding: '0 4px', borderRadius: 3, border: '1px solid rgba(255,179,0,0.25)', whiteSpace: 'nowrap' }}>
+              <span style={{ fontSize: 9, color: '#a37200', background: 'rgba(255,191,40,0.1)', padding: '0 4px', borderRadius: 3, border: '1px solid rgba(163,114,0,0.25)', whiteSpace: 'nowrap' }}>
                 ↓ {item.widened_from.map(u => u.split(/[#/]/).pop()).join(', ')}
               </span>
             )}
@@ -112,7 +112,7 @@ function SearchableDropdown({ placeholder, items, value, onChange, disabled, loa
         {infoUri === item.uri && (item.rdfs_comment || item.rdfs_label) && (
           <div style={{
             padding: '6px 12px 6px 16px', fontSize: 10, color: 'var(--text-dim)',
-            background: 'rgba(99,145,234,0.06)', borderLeft: '2px solid var(--accent)',
+            background: 'rgba(25,190,207,0.06)', borderLeft: '2px solid var(--accent)',
             lineHeight: 1.5, maxHeight: 100, overflowY: 'auto',
           }}>
             {item.rdfs_comment || item.rdfs_label}
@@ -193,7 +193,7 @@ function SearchableDropdown({ placeholder, items, value, onChange, disabled, loa
                 )}
                 {widened.length > 0 && (
                   <>
-                    <div style={{ padding: '4px 12px', fontSize: 9, color: '#d48c1a', background: 'rgba(255,179,0,0.05)', letterSpacing: '0.08em', textTransform: 'uppercase', borderTop: '1px solid rgba(255,179,0,0.15)' }}>
+                    <div style={{ padding: '4px 12px', fontSize: 9, color: '#a37200', background: 'rgba(255,191,40,0.05)', letterSpacing: '0.08em', textTransform: 'uppercase', borderTop: '1px solid rgba(255,191,40,0.15)' }}>
                       Widening: from subclasses ({widened.length})
                     </div>
                     {widened.map(renderItem)}
@@ -211,7 +211,7 @@ function SearchableDropdown({ placeholder, items, value, onChange, disabled, loa
               <span style={{ color: 'var(--border-bright)' }}>{inherited.length} inherited</span>
             )}
             {showInheritance && widened.length > 0 && (
-              <span style={{ color: '#d48c1a' }}>{widened.length} widened</span>
+              <span style={{ color: '#a37200' }}>{widened.length} widened</span>
             )}
           </div>
         </div>
@@ -551,10 +551,10 @@ export default function OntologyPanel({ onDragStart, widening, wideningParent = 
           {predicate && (
             <div style={{
               marginTop: 5, padding: '5px 8px',
-              background: predicate.widened_from?.length > 0 ? 'rgba(255,179,0,0.06)' : 'rgba(212,140,26,0.06)',
-              border: `1px solid ${predicate.widened_from?.length > 0 ? 'rgba(255,179,0,0.2)' : 'rgba(212,140,26,0.2)'}`,
+              background: predicate.widened_from?.length > 0 ? 'rgba(255,191,40,0.06)' : 'rgba(255,191,40,0.06)',
+              border: `1px solid ${predicate.widened_from?.length > 0 ? 'rgba(255,191,40,0.2)' : 'rgba(255,191,40,0.2)'}`,
               borderRadius: 'var(--radius)', fontFamily: 'var(--mono)', fontSize: 10,
-              color: predicate.widened_from?.length > 0 ? '#d48c1a' : 'var(--purple)',
+              color: predicate.widened_from?.length > 0 ? '#a37200' : 'var(--purple)',
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
                 <span>→</span>
@@ -570,9 +570,9 @@ export default function OntologyPanel({ onDragStart, widening, wideningParent = 
                 )}
                 {predicate.widened_from?.length > 0 && (
                   <span style={{
-                    fontSize: 9, color: '#d48c1a',
-                    background: 'rgba(255,179,0,0.1)', padding: '0 5px',
-                    borderRadius: 3, border: '1px solid rgba(255,179,0,0.25)',
+                    fontSize: 9, color: '#a37200',
+                    background: 'rgba(255,191,40,0.1)', padding: '0 5px',
+                    borderRadius: 3, border: '1px solid rgba(163,114,0,0.25)',
                   }}>
                     ↓ {predicate.widened_from.map(u => u.split(/[#/]/).pop()).join(', ')}
                   </span>
@@ -608,7 +608,7 @@ export default function OntologyPanel({ onDragStart, widening, wideningParent = 
               onDragStart={e => handleDragStart(e, object, 'object')}
               style={{
                 marginTop: 5, padding: '5px 8px',
-                background: 'rgba(76,175,125,0.08)', border: '1px solid rgba(76,175,125,0.25)',
+                background: 'rgba(92,236,148,0.08)', border: '1px solid rgba(20,163,92,0.25)',
                 borderRadius: 'var(--radius)', fontFamily: 'var(--mono)', fontSize: 10, color: 'var(--green)',
                 display: 'flex', alignItems: 'center', gap: 6,
               }}
@@ -640,14 +640,14 @@ export default function OntologyPanel({ onDragStart, widening, wideningParent = 
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 5, paddingLeft: 10 }}>
                 <span style={{ color: 'var(--border-bright)' }}>→</span>
-                <span style={{ color: predicate.widened_from?.length > 0 ? '#d48c1a' : 'var(--purple)', fontFamily: 'var(--mono)' }}>{predicate.label}</span>
+                <span style={{ color: predicate.widened_from?.length > 0 ? '#a37200' : 'var(--purple)', fontFamily: 'var(--mono)' }}>{predicate.label}</span>
                 {predicate.inherited_from?.length > 0 && (
                   <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>
                     (inherited)
                   </span>
                 )}
                 {predicate.widened_from?.length > 0 && (
-                  <span style={{ fontSize: 9, color: '#d48c1a' }}>
+                  <span style={{ fontSize: 9, color: '#a37200' }}>
                     (widened)
                   </span>
                 )}

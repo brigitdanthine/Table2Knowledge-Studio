@@ -1,19 +1,19 @@
 import React, { useState } from 'react'
-import { X, GitMerge, ChevronRight, Link2, Waypoints, Anchor } from 'lucide-react'
+import { X, GitMerge, ChevronRight, Link2, Anchor, GitBranch, Globe2 } from 'lucide-react'
 
 /**
  * Modal to edit an existing edge's metadata:
  * - Property label/URI
+ * - Explorer display names (forward + inverse)
  * - Join-Key column
- * - Dot-One property + target
  * - Source/Target handles (connection points)
  */
 
 const HANDLE_OPTIONS = [
-  { value: 'l', label: '← Links' },
-  { value: 'r', label: '→ Rechts' },
-  { value: 't', label: '↑ Oben' },
-  { value: 'b', label: '↓ Unten' },
+  { value: 'l', label: '← Left' },
+  { value: 'r', label: '→ Right' },
+  { value: 't', label: '↑ Top' },
+  { value: 'b', label: '↓ Bottom' },
 ]
 
 function parseHandle(handle, type) {
@@ -27,10 +27,15 @@ export default function EdgeEditModal({ edge, sourceNode, targetNode, onConfirm,
   const [propertyUri, setPropertyUri] = useState(edge.data?.propertyUri || '')
   const [joinColumnSource, setJoinColumnSource] = useState(edge.data?.joinColumnSource || '')
   const [joinColumnTarget, setJoinColumnTarget] = useState(edge.data?.joinColumnTarget || edge.data?.joinColumn || '')
-  const [dotOne, setDotOne] = useState(edge.data?.dotOne || '')
-  const [dotOneTarget, setDotOneTarget] = useState(edge.data?.dotOneTarget || '')
+  // Dot-One is created by drag & drop onto the edge, not edited here — the
+  // existing values are only carried through unchanged on confirm.
+  const dotOne = edge.data?.dotOne || ''
+  const dotOneTarget = edge.data?.dotOneTarget || ''
   const [srcSide, setSrcSide] = useState(parseHandle(edge.sourceHandle, 'source'))
   const [tgtSide, setTgtSide] = useState(parseHandle(edge.targetHandle, 'target'))
+  const [noInverse, setNoInverse] = useState(!!edge.data?.noInverse)
+  const [inversePropertyUri, setInversePropertyUri] = useState(edge.data?.inversePropertyUri || '')
+  const [explorerLabel, setExplorerLabel] = useState(edge.data?.explorerLabel || '')
 
   const srcCols = sourceNode?.data?.tableRows?.[0] ? Object.keys(sourceNode.data.tableRows[0]) : []
   const tgtCols = targetNode?.data?.tableRows?.[0] ? Object.keys(targetNode.data.tableRows[0]) : []
@@ -45,6 +50,9 @@ export default function EdgeEditModal({ edge, sourceNode, targetNode, onConfirm,
       dotOneTarget: dotOneTarget || null,
       sourceHandle: `${srcSide}-s`,
       targetHandle: `${tgtSide}-t`,
+      noInverse,
+      inversePropertyUri,
+      explorerLabel,
     })
   }
 
@@ -96,7 +104,7 @@ export default function EdgeEditModal({ edge, sourceNode, targetNode, onConfirm,
             </label>
             <input value={label} onChange={e => setLabel(e.target.value)}
               style={{ width: '100%', fontSize: 11, fontFamily: 'var(--mono)', padding: '5px 8px' }}
-              placeholder="z.B. P2_has_type" />
+              placeholder="e.g. P2_has_type" />
           </div>
           <div>
             <label style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: 3 }}>
@@ -105,6 +113,42 @@ export default function EdgeEditModal({ edge, sourceNode, targetNode, onConfirm,
             <input value={propertyUri} onChange={e => setPropertyUri(e.target.value)}
               style={{ width: '100%', fontSize: 10, fontFamily: 'var(--mono)', padding: '5px 8px', color: 'var(--text-dim)' }}
               placeholder="http://..." />
+          </div>
+
+          {/* Graph Explorer-only display name override — replaces the CIDOC
+              property name shown for THIS specific connection. Two edges with
+              the same Explorer-Name merge into one group in the Explorer. */}
+          <div>
+            <label style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 3 }}>
+              <Globe2 size={9} /> Explorer-Name (Property)
+            </label>
+            <input value={explorerLabel} onChange={e => setExplorerLabel(e.target.value)}
+              style={{ width: '100%', fontSize: 11, padding: '5px 8px' }}
+              placeholder="e.g. has material type" />
+            <span style={{ fontSize: 9, color: 'var(--text-muted)', display: 'block', marginTop: 2 }}>
+              Replaces the CIDOC property name in the Graph Explorer for this connection only. Two connections
+              sharing the same Explorer name are merged into a single group in the Explorer. Has no effect on
+              Dot-One relations (above/below/contemporary/corresponds).
+            </span>
+          </div>
+
+          {/* Inverse Property override — only needed when the loaded ontology
+              doesn't declare an owl:inverseOf for this property (or a custom/
+              free-text property is used), and the auto-derived opposite
+              direction should show something other than the same property in
+              both directions. Leave empty to keep the automatic resolution. */}
+          <div>
+            <label style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 3 }}>
+              <Globe2 size={9} /> Inverse Explorer-Name (Property)
+            </label>
+            <input value={inversePropertyUri} onChange={e => setInversePropertyUri(e.target.value)}
+              style={{ width: '100%', fontSize: 10, fontFamily: 'var(--mono)', padding: '5px 8px', color: 'var(--text-dim)' }}
+              placeholder="http://... (empty = automatic from ontology)" />
+            <span style={{ fontSize: 9, color: 'var(--text-muted)', display: 'block', marginTop: 2 }}>
+              Optional. Expects the URI of the inverse property. Only needed if the ontology declares no inverse,
+              or if one other than the automatically resolved property should be shown. Leave empty for automatic
+              resolution (owl:inverseOf), or use “No automatic opposite direction” below.
+            </span>
           </div>
 
           {/* Handles */}
@@ -138,8 +182,8 @@ export default function EdgeEditModal({ edge, sourceNode, targetNode, onConfirm,
                     style={{
                       flex: 1, padding: '4px 0', fontSize: 10, borderRadius: 4, cursor: 'pointer',
                       border: '1px solid', textAlign: 'center',
-                      background: tgtSide === h.value ? 'rgba(76,175,125,0.15)' : 'var(--bg)',
-                      borderColor: tgtSide === h.value ? 'rgba(76,175,125,0.4)' : 'var(--border)',
+                      background: tgtSide === h.value ? 'rgba(92,236,148,0.15)' : 'var(--bg)',
+                      borderColor: tgtSide === h.value ? 'rgba(20,163,92,0.4)' : 'var(--border)',
                       color: tgtSide === h.value ? 'var(--green)' : 'var(--text-muted)',
                     }}>
                     {h.label}
@@ -156,7 +200,7 @@ export default function EdgeEditModal({ edge, sourceNode, targetNode, onConfirm,
             </label>
             <select value={joinColumnSource} onChange={e => setJoinColumnSource(e.target.value)}
               style={{ width: '100%', fontSize: 10, padding: '5px 8px', fontFamily: 'var(--mono)', background: 'var(--bg)', color: 'var(--text)', border: '1px solid var(--border)', borderRadius: 4 }}>
-              <option value="">(kein – Auto-Detect)</option>
+              <option value="">(none – auto-detect)</option>
               {srcCols.map(c => <option key={`src_${c}`} value={c}>{c}</option>)}
             </select>
           </div>
@@ -168,24 +212,33 @@ export default function EdgeEditModal({ edge, sourceNode, targetNode, onConfirm,
             </label>
             <select value={joinColumnTarget} onChange={e => setJoinColumnTarget(e.target.value)}
               style={{ width: '100%', fontSize: 10, padding: '5px 8px', fontFamily: 'var(--mono)', background: 'var(--bg)', color: 'var(--text)', border: '1px solid var(--border)', borderRadius: 4 }}>
-              <option value="">(kein – Auto-Detect)</option>
+              <option value="">(none – auto-detect)</option>
               {tgtCols.map(c => <option key={`tgt_${c}`} value={c}>{c}</option>)}
             </select>
           </div>
 
-          {/* Dot-One */}
+          {/* Inverse suppression */}
           <div>
-            <label style={{ fontSize: 9, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: 4, marginBottom: 3 }}>
-              <Waypoints size={9} /> Dot-One Property
+            <label style={{
+              display: 'flex', alignItems: 'flex-start', gap: 6, cursor: 'pointer',
+              padding: '6px 8px', border: '1px solid var(--border)', borderRadius: 4,
+              background: noInverse ? 'rgba(255,191,40,0.08)' : 'var(--bg)',
+            }}>
+              <input type="checkbox" checked={noInverse}
+                onChange={e => setNoInverse(e.target.checked)}
+                style={{ marginTop: 2 }} />
+              <span>
+                <span style={{ fontSize: 11, color: 'var(--text)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <GitBranch size={10} /> No automatic opposite direction for this connection
+                </span>
+                <span style={{ fontSize: 9, color: 'var(--text-muted)', display: 'block', marginTop: 2, lineHeight: 1.4 }}>
+                  For every edge, the Graph Explorer normally also derives the view from the opposite side
+                  (e.g. the inverse property or an inverted Dot-One value). Enable this if that derivation does
+                  not apply — or is uncertain — for this specific connection; only the direction actually
+                  modelled here will then appear.
+                </span>
+              </span>
             </label>
-            <div style={{ display: 'flex', gap: 6 }}>
-              <input placeholder="Property (e.g. crm:P2_has_type)" value={dotOne}
-                onChange={e => setDotOne(e.target.value)}
-                style={{ flex: 1, fontSize: 10, padding: '5px 8px', fontFamily: 'var(--mono)' }} />
-              <input placeholder="Target-URI" value={dotOneTarget}
-                onChange={e => setDotOneTarget(e.target.value)}
-                style={{ width: 140, fontSize: 10, padding: '5px 8px', fontFamily: 'var(--mono)' }} />
-            </div>
           </div>
         </div>
 

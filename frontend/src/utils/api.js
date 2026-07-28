@@ -110,4 +110,18 @@ export const api = {
         format: format || 'xml',
       }),
     }),
+
+  exportGraphExplorerJson: (uriTsv, literalTsv, title, typeColors, typeLabels, edgeLabels) =>
+    req('/pipeline/graph-explorer-json', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        uri_tsv: uriTsv,
+        literal_tsv: literalTsv || '',
+        title: title || 'RDF Graph',
+        type_colors: typeColors || {},
+        type_labels: typeLabels || {},
+        edge_labels: edgeLabels || {},
+      }),
+    }),
 }

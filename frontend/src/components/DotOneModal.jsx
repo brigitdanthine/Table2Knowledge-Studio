@@ -72,12 +72,12 @@ export default function DotOneModal({ edge, sourceNode, targetNode, dotItem, onC
       >
         {/* Header */}
         <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <Waypoints size={14} color="#a8326a" />
+          <Waypoints size={14} color="#db2777" />
           <div style={{ flex: 1 }}>
-            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>Dot-One Property zuweisen</div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text)' }}>Assign Dot-One Property</div>
             <div style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 3 }}>
-              Class <span style={{ fontFamily: 'var(--mono)', color: '#a8326a' }}>{dotLabel}</span> will be
-              an Kante <span style={{ fontFamily: 'var(--mono)', color: 'var(--orange)' }}>{edgeLabel}</span> angehängt
+              Class <span style={{ fontFamily: 'var(--mono)', color: '#db2777' }}>{dotLabel}</span> will be attached
+              to edge <span style={{ fontFamily: 'var(--mono)', color: 'var(--orange)' }}>{edgeLabel}</span>
             </div>
           </div>
           <button className="btn-ghost" style={{ padding: '3px 6px' }} onClick={onCancel}><X size={13} /></button>
@@ -97,9 +97,9 @@ export default function DotOneModal({ edge, sourceNode, targetNode, dotItem, onC
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, paddingLeft: 20 }}>
             <span style={{ color: 'var(--text-muted)' }}>└─</span>
-            <span style={{ color: '#a8326a', fontStyle: 'italic' }}>dot-one: ?.property</span>
+            <span style={{ color: '#db2777', fontStyle: 'italic' }}>dot-one: ?.property</span>
             <span style={{ color: 'var(--text-muted)' }}>→</span>
-            <span style={{ color: '#a8326a', fontWeight: 600 }}>{dotLabel}</span>
+            <span style={{ color: '#db2777', fontWeight: 600 }}>{dotLabel}</span>
           </div>
         </div>
 
@@ -107,7 +107,7 @@ export default function DotOneModal({ edge, sourceNode, targetNode, dotItem, onC
         <div style={{ padding: '8px 12px', borderBottom: '1px solid var(--border)' }}>
           <div style={{ position: 'relative' }}>
             <Search size={12} style={{ position: 'absolute', left: 9, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-            <input ref={searchRef} placeholder="Dot-One Property suchen (z.B. P2_has_type)…"
+            <input ref={searchRef} placeholder="Search Dot-One property (e.g. P2_has_type)…"
               value={search} onChange={e => setSearch(e.target.value)}
               style={{ paddingLeft: 28 }} />
           </div>
@@ -116,9 +116,9 @@ export default function DotOneModal({ edge, sourceNode, targetNode, dotItem, onC
         {/* Property list */}
         <div style={{ flex: 1, overflowY: 'auto', minHeight: 80, maxHeight: 250 }}>
           {loading ? (
-            <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 11 }}>Lade Properties…</div>
+            <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 11 }}>Loading properties…</div>
           ) : filtered.length === 0 ? (
-            <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 11 }}>Keine Treffer</div>
+            <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 11 }}>No matches</div>
           ) : (
             filtered.slice(0, 50).map(p => (
               <div key={p.uri}>
@@ -127,16 +127,16 @@ export default function DotOneModal({ edge, sourceNode, targetNode, dotItem, onC
                   onDoubleClick={() => { setSelected(p); setTimeout(handleConfirm, 0) }}
                   style={{
                     width: '100%', textAlign: 'left', padding: '6px 14px',
-                    background: selected?.uri === p.uri ? 'rgba(168,50,106,0.08)' : 'transparent',
+                    background: selected?.uri === p.uri ? 'rgba(219,39,119,0.08)' : 'transparent',
                     border: 'none', cursor: 'pointer',
-                    borderLeft: selected?.uri === p.uri ? '2px solid #a8326a' : '2px solid transparent',
+                    borderLeft: selected?.uri === p.uri ? '2px solid #db2777' : '2px solid transparent',
                     display: 'flex', flexDirection: 'column', gap: 1, transition: 'background 0.1s',
                   }}
                   onMouseEnter={e => { if (selected?.uri !== p.uri) e.currentTarget.style.background = 'var(--bg-hover)' }}
                   onMouseLeave={e => { if (selected?.uri !== p.uri) e.currentTarget.style.background = 'transparent' }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: selected?.uri === p.uri ? '#a8326a' : 'var(--text)' }}>
+                    <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: selected?.uri === p.uri ? '#db2777' : 'var(--text)' }}>
                       {p.label}
                     </span>
                     {(p.rdfs_comment || p.rdfs_label) && (
@@ -156,7 +156,7 @@ export default function DotOneModal({ edge, sourceNode, targetNode, dotItem, onC
                 {infoUri === p.uri && p.rdfs_comment && (
                   <div style={{
                     padding: '6px 14px 6px 18px', fontSize: 10, color: 'var(--text-dim)',
-                    background: 'rgba(168,50,106,0.05)', borderLeft: '2px solid #a8326a',
+                    background: 'rgba(219,39,119,0.05)', borderLeft: '2px solid #db2777',
                     lineHeight: 1.5, maxHeight: 80, overflowY: 'auto',
                   }}>
                     {p.rdfs_comment}
@@ -170,8 +170,8 @@ export default function DotOneModal({ edge, sourceNode, targetNode, dotItem, onC
         {/* Footer */}
         <div style={{ borderTop: '1px solid var(--border)', padding: '10px 14px', display: 'flex', flexDirection: 'column', gap: 6 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <Waypoints size={10} color="#a8326a" />
-            <input placeholder="Oder freie Eingabe: Dot-One Property…" value={customProp}
+            <Waypoints size={10} color="#db2777" />
+            <input placeholder="Or free input: Dot-One property…" value={customProp}
               onChange={e => { setCustomProp(e.target.value); if (e.target.value) setSelected(null) }}
               style={{ flex: 1, fontSize: 11, fontFamily: 'var(--mono)' }} />
           </div>

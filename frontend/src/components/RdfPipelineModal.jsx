@@ -81,7 +81,7 @@ export default function RdfPipelineModal({
       const ext = res.extension || '.rdf'
       const mime = res.mime_type || 'application/rdf+xml'
       downloadText(`ontology-export${ext}`, res.rdf, mime)
-      toast.success(`RDF exportiert: ${res.triple_count} Triples (${res.format})`)
+      toast.success(`RDF exported: ${res.triple_count} triples (${res.format})`)
     } catch (e) {
       toast.error('RDF export error: ' + e.message)
     } finally {
@@ -177,7 +177,7 @@ export default function RdfPipelineModal({
       setNewRepoName('')
       loadRepos()
     } catch (e) {
-      toast.error('Repo erstellen fehlgeschlagen: ' + e.message)
+      toast.error('Creating repository failed: ' + e.message)
     }
   }
 
@@ -206,9 +206,9 @@ export default function RdfPipelineModal({
     try {
       await api.importToGraphDB(effectiveProjectId, graphdbUrl, repo, repo, graphdbUser, graphdbPass, false)
       setImportDone(true)
-      toast.success(`Triples importiert in "${repo}"`)
+      toast.success(`Triples imported into "${repo}"`)
     } catch (e) {
-      toast.error('Import fehlgeschlagen: ' + e.message)
+      toast.error('Import failed: ' + e.message)
     } finally {
       setGraphdbLoading(false)
     }
@@ -222,9 +222,9 @@ export default function RdfPipelineModal({
     try {
       await api.importToGraphDB(effectiveProjectIdLit, graphdbUrl, repo, repo, graphdbUser, graphdbPass, true)
       setImportLitDone(true)
-      toast.success(`Literals importiert in "${repo}"`)
+      toast.success(`Literals imported into "${repo}"`)
     } catch (e) {
-      toast.error('Literal-Import fehlgeschlagen: ' + e.message)
+      toast.error('Literal import failed: ' + e.message)
     } finally {
       setGraphdbLoading(false)
     }
@@ -261,14 +261,14 @@ export default function RdfPipelineModal({
     fontSize: 12, padding: '6px 10px', fontFamily: 'var(--mono)',
   }
   const resultBoxStyle = {
-    background: 'rgba(76,175,125,0.08)', border: '1px solid rgba(76,175,125,0.25)',
+    background: 'rgba(92,236,148,0.08)', border: '1px solid rgba(20,163,92,0.25)',
     borderRadius: 'var(--radius)', padding: '8px 12px', fontSize: 11,
     fontFamily: 'var(--mono)', color: 'var(--green)', marginTop: 8,
   }
   const warnBoxStyle = {
     ...resultBoxStyle,
-    background: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.25)',
-    color: '#d48c1a',
+    background: 'rgba(255,191,40,0.08)', borderColor: 'rgba(163,114,0,0.25)',
+    color: '#a37200',
   }
 
   return (
@@ -345,8 +345,8 @@ export default function RdfPipelineModal({
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
                       <Check size={12} /> Export erfolgreich
                     </div>
-                    <div>Triples (URI): <strong>{exportResult.uriRowCount}</strong> Zeilen</div>
-                    <div>Literals: <strong>{exportResult.literalRowCount}</strong> Zeilen</div>
+                    <div>Triples (URI): <strong>{exportResult.uriRowCount}</strong> rows</div>
+                    <div>Literals: <strong>{exportResult.literalRowCount}</strong> rows</div>
                   </div>
 
                   <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
@@ -387,7 +387,7 @@ export default function RdfPipelineModal({
                       </button>
                     </div>
                     <div style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 4 }}>
-                      Generiert RDF-Instanzdaten inkl. Typen, Labels, Properties, Dot-One und Literals lokal via rdflib.
+                      Generates RDF instance data incl. types, labels, properties, Dot-One and literals locally via rdflib.
                     </div>
                   </div>
 
@@ -472,7 +472,7 @@ export default function RdfPipelineModal({
               <div style={fieldStyle}>
                 <label style={labelStyle}>Path to the ontorefine-cli JAR (empty = search automatically)</label>
                 <input style={inputStyle} value={jarPath} onChange={e => setJarPath(e.target.value)}
-                  placeholder="z.B. C:/CRM/ontorefine-cli-1.2.1-jar-with-dependencies.jar" />
+                  placeholder="e.g. C:/CRM/ontorefine-cli-1.2.1-jar-with-dependencies.jar" />
               </div>
               <div style={fieldStyle}>
                 <label style={labelStyle}>Name of the project</label>
@@ -554,13 +554,13 @@ export default function RdfPipelineModal({
                     <label style={{ ...labelStyle, fontSize: 9 }}>Triples project ID (overrides step 2)</label>
                     <input style={inputStyle} value={manualProjectId}
                       onChange={e => setManualProjectId(e.target.value)}
-                      placeholder={refineResult?.project_id || 'z.B. 2656649006764'} />
+                      placeholder={refineResult?.project_id || 'e.g. 2656649006764'} />
                   </div>
                   <div style={{ flex: 1 }}>
                     <label style={{ ...labelStyle, fontSize: 9 }}>Literal project ID (overrides step 2)</label>
                     <input style={inputStyle} value={manualProjectIdLit}
                       onChange={e => setManualProjectIdLit(e.target.value)}
-                      placeholder={refineLitResult?.project_id || 'z.B. 2656649006765'} />
+                      placeholder={refineLitResult?.project_id || 'e.g. 2656649006765'} />
                   </div>
                 </div>
                 <div style={{ fontSize: 9, color: 'var(--text-muted)', marginTop: 4 }}>

@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 echo.
 echo ==========================================
-echo ==        Table2Knowledge Studio        ==
+echo ==        OntoCartographer Studio       ==
 echo ==========================================
 echo.
 
@@ -29,12 +29,12 @@ if not exist "frontend\node_modules" (
 REM ── Launch ───────────────────────────────────────────────────────────────────
 echo.
 echo ^> Starting backend  -^>  http://localhost:8000
-start "Table2KnowledgeStudio-Backend" cmd /k "cd /d "%~dp0backend" && call .venv\Scripts\activate.bat && uvicorn main:app --reload --port 8000"
+start "OntoCartographerStudio-Backend" cmd /k "cd /d "%~dp0backend" && call .venv\Scripts\activate.bat && uvicorn main:app --reload --port 8000"
 
 timeout /t 2 /nobreak >nul
 
 echo ^> Starting frontend -^>  http://localhost:3000
-start "Table2KnowledgeStudio-Frontend" cmd /k "cd /d "%~dp0frontend" && npm run dev"
+start "OntoCartographerStudio-Frontend" cmd /k "cd /d "%~dp0frontend" && npm run dev"
 
 echo.
 echo ========================================

@@ -3,6 +3,7 @@ import { Upload, Table, X, GripVertical } from 'lucide-react'
 
 let tableIdCounter = 1
 
+// ─── CSV parser ──────────────────────────────────────────────────────────────
 function parseCSV(text, separator = ',') {
   const lines = text.trim().split('\n')
   const headers = lines[0].split(separator).map(h => h.trim().replace(/^"|"$/g, ''))
@@ -17,12 +18,158 @@ function parseCSV(text, separator = ',') {
   return { headers, rows: allRows.slice(0, 10), allRows }
 }
 
+// ─── JSON helpers ─────────────────────────────────────────────────────────────
+
+// META_KEYS: keys that describe *fields* rather than *being* field values.
+// When extracting leaf fields from a schema-style JSON, rows whose only
+// keys are in this set are skipped (they are schema annotations, not data).
+const META_KEYS = new Set(['typ', 'type', 'format', 'hinweis', 'note', 'required', 'pattern', 'minimum', 'maximum', 'enum'])
+
+/**
+ * MODE: "records"
+ * Classic array-of-objects (or wrapped array). Each object becomes one row.
+ * One level of nesting is flattened: { a: { b: 1 } } → { "a.b": "1" }
+ */
+function parseJsonRecords(parsed) {
+  let records = []
+  if (Array.isArray(parsed)) {
+    records = parsed.map(item =>
+      (item !== null && typeof item === 'object' && !Array.isArray(item)) ? item : { value: item }
+    )
+  } else if (parsed !== null && typeof parsed === 'object') {
+    const wrapperKeys = ['data', 'rows', 'items', 'results', 'records', 'features']
+    const found = wrapperKeys.find(k => Array.isArray(parsed[k]))
+    if (found) {
+      records = parsed[found].map(item =>
+        (item !== null && typeof item === 'object' && !Array.isArray(item)) ? item : { value: item }
+      )
+    } else {
+      records = Object.entries(parsed).map(([k, v]) => ({ key: k, value: JSON.stringify(v) }))
+    }
+  }
+
+  const flattenRow = (row) => {
+    const flat = {}
+    for (const [k, v] of Object.entries(row)) {
+      if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
+        for (const [k2, v2] of Object.entries(v)) {
+          flat[`${k}.${k2}`] = v2 == null ? '' : String(v2)
+        }
+      } else {
+        flat[k] = v == null ? '' : (Array.isArray(v) ? JSON.stringify(v) : String(v))
+      }
+    }
+    return flat
+  }
+
+  const flatRows = records.map(flattenRow)
+  const headerSet = new Set()
+  flatRows.forEach(r => Object.keys(r).forEach(k => headerSet.add(k)))
+  const headers = Array.from(headerSet)
+  const allRows = flatRows.map(r => {
+    const obj = {}
+    headers.forEach(h => { obj[h] = r[h] ?? '' })
+    return obj
+  })
+  return { headers, rows: allRows.slice(0, 10), allRows }
+}
+
+/**
+ * MODE: "schema"
+ * Recursively walks the JSON tree and collects individual field definitions.
+ *
+ * A "field definition" is an object that contains at least one of the
+ * canonical annotation keys (label, beschreibung, description, title, typ,
+ * type) alongside an identifier key. Each field becomes ONE row.
+ *
+ * The columns are: gruppe (path), feldname (key), + all annotation values.
+ *
+ * For groups whose children are NOT field definitions (i.e. plain data
+ * objects), the group itself becomes a single row with its keys as columns
+ * — this handles arbitrary schema shapes generically.
+ */
+function parseJsonSchema(parsed) {
+  const rows = []
+
+  // Keys that indicate "this object is a field definition"
+  const FIELD_DEF_KEYS = new Set(['label', 'beschreibung', 'description', 'title', 'typ', 'type'])
+
+  function isFieldDef(obj) {
+    if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) return false
+    return Object.keys(obj).some(k => FIELD_DEF_KEYS.has(k))
+  }
+
+  function extractFieldRow(fieldKey, fieldObj, groupPath) {
+    // Build a flat row: gruppe + feldname + all annotation values (skip nested objects except struktur-style)
+    const row = {
+      gruppe: groupPath,
+      feldname: fieldKey,
+    }
+    for (const [k, v] of Object.entries(fieldObj)) {
+      if (META_KEYS.has(k)) continue // skip typ/format/hinweis as columns (they're noise for mapping)
+      if (v !== null && typeof v === 'object' && !Array.isArray(v)) {
+        row[k] = JSON.stringify(v)
+      } else if (Array.isArray(v)) {
+        row[k] = JSON.stringify(v)
+      } else {
+        row[k] = v == null ? '' : String(v)
+      }
+    }
+    return row
+  }
+
+  function walk(node, pathParts) {
+    if (typeof node !== 'object' || node === null || Array.isArray(node)) return
+
+    const childEntries = Object.entries(node).filter(([k]) => !META_KEYS.has(k))
+    const childObjects = childEntries.filter(([, v]) => v !== null && typeof v === 'object' && !Array.isArray(v))
+
+    // Case 1: children are field definitions → each child = one row
+    if (childObjects.length > 0 && childObjects.every(([, v]) => isFieldDef(v))) {
+      const groupPath = pathParts.join(' › ') || '—'
+      childObjects.forEach(([k, v]) => {
+        rows.push(extractFieldRow(k, v, groupPath))
+      })
+      return
+    }
+
+    // Case 2: mixed or deeper nesting → recurse into object children
+    for (const [k, v] of childEntries) {
+      if (typeof v === 'object' && v !== null && !Array.isArray(v)) {
+        walk(v, [...pathParts, k])
+      }
+    }
+
+    // Case 3: no object children at all → this node itself is a leaf field, emit as row
+    if (childObjects.length === 0 && isFieldDef(node)) {
+      const parentPath = pathParts.slice(0, -1).join(' › ') || '—'
+      const fieldKey = pathParts[pathParts.length - 1] || '—'
+      rows.push(extractFieldRow(fieldKey, node, parentPath))
+    }
+  }
+
+  walk(parsed, [])
+
+  if (rows.length === 0) return null
+
+  // Collect all headers (union), keeping gruppe + feldname first
+  const headerSet = new Set(['gruppe', 'feldname'])
+  rows.forEach(r => Object.keys(r).forEach(k => headerSet.add(k)))
+  const headers = Array.from(headerSet)
+  const allRows = rows.map(r => {
+    const obj = {}
+    headers.forEach(h => { obj[h] = r[h] ?? '' })
+    return obj
+  })
+  return { headers, rows: allRows.slice(0, 10), allRows }
+}
+
+// ─── Draggable column header ──────────────────────────────────────────────────
 function DraggableColumnHeader({ name, index, tableId, allRows }) {
   const handleDragStart = (e) => {
     e.dataTransfer.setData('application/column', JSON.stringify({ name, index, tableId, allRows }))
     e.dataTransfer.effectAllowed = 'copy'
   }
-
   return (
     <th
       draggable
@@ -46,23 +193,177 @@ function DraggableColumnHeader({ name, index, tableId, allRows }) {
   )
 }
 
-export default function TablePanel({ onAllRowsUpdate }) {
+// ─── JSON Mode Modal ──────────────────────────────────────────────────────────
+function JsonModeModal({ fileName, onConfirm, onCancel }) {
+  const [mode, setMode] = useState('records')
+
+  const descriptions = {
+    records: {
+      title: 'Records',
+      icon: '⊞',
+      detail: 'Array of objects – each object becomes one row.',
+      example: '[{ "SU": "003", "Site": "Engelhartstetten" }, …]',
+      hint: 'For exported databases, API responses, find lists etc.',
+    },
+    schema: {
+      title: 'Schema / Form',
+      icon: '⊟',
+      detail: 'Nested field definitions – each leaf field becomes one column.',
+      example: '{ "fields": { "header": { "Mnr": { "label": "…", "type": "string" } } } }',
+      hint: 'For form schemas, data models, ontology structures etc.',
+    },
+  }
+
+  const d = descriptions[mode]
+
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 9999,
+      background: 'rgba(0,0,0,0.72)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <div style={{
+        background: 'var(--bg-panel)',
+        border: '1px solid var(--border)',
+        borderRadius: 10,
+        padding: '24px 28px',
+        width: 420,
+        boxShadow: '0 8px 40px rgba(0,0,0,0.5)',
+      }}>
+        {/* Header */}
+        <div style={{ marginBottom: 18 }}>
+          <div style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: 4 }}>
+            JSON Import
+          </div>
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', fontFamily: 'var(--mono)' }}>
+            {fileName}
+          </div>
+        </div>
+
+        {/* Mode selector */}
+        <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 10 }}>
+          How should this JSON file be interpreted?
+        </div>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 18 }}>
+          {Object.entries(descriptions).map(([key, desc]) => (
+            <button
+              key={key}
+              onClick={() => setMode(key)}
+              style={{
+                flex: 1,
+                padding: '10px 12px',
+                borderRadius: 7,
+                border: `1.5px solid ${mode === key ? 'var(--accent)' : 'var(--border)'}`,
+                background: mode === key ? 'var(--accent-glow)' : 'var(--bg-card)',
+                color: mode === key ? 'var(--accent)' : 'var(--text-muted)',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all 0.15s',
+              }}
+            >
+              <div style={{ fontSize: 16, marginBottom: 4 }}>{desc.icon}</div>
+              <div style={{ fontSize: 11, fontWeight: 600 }}>{desc.title}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* Detail box */}
+        <div style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: 6,
+          padding: '12px 14px',
+          marginBottom: 20,
+          fontSize: 11,
+        }}>
+          <div style={{ color: 'var(--text)', marginBottom: 6 }}>{d.detail}</div>
+          <div style={{
+            fontFamily: 'var(--mono)', fontSize: 10,
+            color: 'var(--accent)', background: 'var(--bg-panel)',
+            borderRadius: 4, padding: '5px 8px', marginBottom: 8,
+            wordBreak: 'break-all',
+          }}>
+            {d.example}
+          </div>
+          <div style={{ color: 'var(--text-muted)', fontSize: 10 }}>{d.hint}</div>
+        </div>
+
+        {/* Actions */}
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+          <button
+            onClick={onCancel}
+            style={{
+              padding: '7px 16px', borderRadius: 6,
+              border: '1px solid var(--border)',
+              background: 'none', color: 'var(--text-muted)',
+              fontSize: 11, cursor: 'pointer',
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onConfirm(mode)}
+            style={{
+              padding: '7px 20px', borderRadius: 6,
+              border: 'none',
+              background: 'var(--accent)', color: 'var(--bg)',
+              fontSize: 11, fontWeight: 600, cursor: 'pointer',
+            }}
+          >
+            Import →
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+export default function TablePanel({ onAllRowsUpdate, onTableRefresh }) {
   const [tables, setTables] = useState([])
   const [activeTable, setActiveTable] = useState(0)
+  // pending JSON files waiting for mode selection
+  const [pendingJson, setPendingJson] = useState(null) // { files: [...], parsed: [...] }
+
+  const processJsonFile = useCallback(async (file) => {
+    const text = await file.text()
+    return { file, parsed: JSON.parse(text) }
+  }, [])
+
+  // Replaces an existing table entry in place (same tableId) instead of appending a duplicate.
+  const applyRefresh = useCallback((tableEntry) => {
+    setTables(ts => {
+      const updated = [...ts]
+      const idx = updated.findIndex(t => t.tableId === tableEntry.tableId)
+      if (idx >= 0) updated[idx] = tableEntry
+      setActiveTable(idx >= 0 ? idx : updated.length - 1)
+      return updated
+    })
+    onTableRefresh?.(tableEntry.tableId, tableEntry.allRows, tableEntry.headers)
+  }, [onTableRefresh])
 
   const handleFileUpload = useCallback(async (e) => {
     const files = Array.from(e.target.files)
+    e.target.value = ''
+
     const newTables = []
+    const refreshedTables = []
+    const jsonFiles = []
 
     for (const file of files) {
       const ext = file.name.split('.').pop().toLowerCase()
-      const tid = `tbl_${tableIdCounter++}`
+      // Re-upload of a file with the same name → refresh that table in place
+      // (same tableId) instead of creating an unrelated second table.
+      const existing = tables.find(t => t.name === file.name)
+      const tid = existing ? existing.tableId : `tbl_${tableIdCounter++}`
 
       if (ext === 'csv' || ext === 'tsv') {
         const sep = ext === 'tsv' ? '\t' : ','
         const text = await file.text()
         const parsed = parseCSV(text, sep)
-        newTables.push({ name: file.name, tableId: tid, ...parsed })
+        const tableEntry = { name: file.name, tableId: tid, ...parsed }
+        if (existing) refreshedTables.push(tableEntry)
+        else newTables.push(tableEntry)
 
       } else if (ext === 'xlsx' || ext === 'xls') {
         try {
@@ -77,22 +378,83 @@ export default function TablePanel({ onAllRowsUpdate }) {
             headers.forEach((h, i) => { obj[h] = row[i] ?? '' })
             return obj
           })
-          newTables.push({ name: file.name, tableId: tid, headers, rows: allRows.slice(0, 10), allRows })
+          const tableEntry = { name: file.name, tableId: tid, headers, rows: allRows.slice(0, 10), allRows }
+          if (existing) refreshedTables.push(tableEntry)
+          else newTables.push(tableEntry)
         } catch (err) {
           console.error('XLSX parse error:', err)
+        }
+
+      } else if (ext === 'json') {
+        try {
+          const { parsed } = await processJsonFile(file)
+          jsonFiles.push({ file, parsed, tid, existing: !!existing })
+        } catch (err) {
+          console.error('JSON parse error:', err)
         }
       }
     }
 
-    setTables(ts => {
-      const updated = [...ts, ...newTables]
-      const last = newTables[newTables.length - 1]
-      if (last) onAllRowsUpdate?.(last.allRows)
-      setActiveTable(updated.length - 1)
-      return updated
-    })
-    e.target.value = ''
-  }, [onAllRowsUpdate])
+    // Add non-JSON tables immediately
+    if (newTables.length > 0) {
+      setTables(ts => {
+        const updated = [...ts, ...newTables]
+        const last = newTables[newTables.length - 1]
+        if (last) onAllRowsUpdate?.(last.allRows)
+        setActiveTable(updated.length - 1)
+        return updated
+      })
+    }
+
+    // Re-uploaded tables: replace in place + push fresh rows into already-mapped nodes
+    refreshedTables.forEach(applyRefresh)
+
+    // Show modal for JSON files (one at a time, sequentially)
+    if (jsonFiles.length > 0) {
+      setPendingJson(jsonFiles)
+    }
+  }, [onAllRowsUpdate, processJsonFile, tables, applyRefresh])
+
+  const handleJsonModeConfirm = useCallback((mode) => {
+    if (!pendingJson || pendingJson.length === 0) return
+
+    const { file, parsed, tid, existing } = pendingJson[0]
+    let result = null
+
+    if (mode === 'schema') {
+      result = parseJsonSchema(parsed)
+      if (!result) {
+        console.warn('JSON schema parse: no leaf fields found, falling back to records mode')
+        result = parseJsonRecords(parsed)
+      }
+    } else {
+      result = parseJsonRecords(parsed)
+    }
+
+    if (result && result.headers.length > 0) {
+      const tableEntry = { name: file.name, tableId: tid, ...result }
+      if (existing) {
+        applyRefresh(tableEntry)
+      } else {
+        setTables(ts => {
+          const updated = [...ts, tableEntry]
+          onAllRowsUpdate?.(tableEntry.allRows)
+          setActiveTable(updated.length - 1)
+          return updated
+        })
+      }
+    }
+
+    // Move to next pending JSON, or clear
+    const remaining = pendingJson.slice(1)
+    setPendingJson(remaining.length > 0 ? remaining : null)
+  }, [pendingJson, onAllRowsUpdate, applyRefresh])
+
+  const handleJsonModeCancel = useCallback(() => {
+    // Skip current file, proceed with remaining
+    const remaining = pendingJson?.slice(1)
+    setPendingJson(remaining?.length > 0 ? remaining : null)
+  }, [pendingJson])
 
   const removeTable = (idx) => {
     setTables(ts => ts.filter((_, i) => i !== idx))
@@ -103,6 +465,16 @@ export default function TablePanel({ onAllRowsUpdate }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+
+      {/* Modal */}
+      {pendingJson && pendingJson.length > 0 && (
+        <JsonModeModal
+          fileName={pendingJson[0].file.name}
+          onConfirm={handleJsonModeConfirm}
+          onCancel={handleJsonModeCancel}
+        />
+      )}
+
       <div style={{
         display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px',
         borderBottom: '1px solid var(--border)', flexShrink: 0,
@@ -112,7 +484,7 @@ export default function TablePanel({ onAllRowsUpdate }) {
           Tables
         </span>
         <label style={{ cursor: 'pointer' }}>
-          <input type="file" accept=".csv,.tsv,.xlsx,.xls" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
+          <input type="file" accept=".csv,.tsv,.xlsx,.xls,.json" multiple style={{ display: 'none' }} onChange={handleFileUpload} />
           <div className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, padding: '3px 8px' }}>
             <Upload size={10} /> Load
           </div>
@@ -121,7 +493,7 @@ export default function TablePanel({ onAllRowsUpdate }) {
 
       {tables.length === 0 ? (
         <div style={{ padding: 16, color: 'var(--text-muted)', fontSize: 11, fontStyle: 'italic' }}>
-          Load CSV / TSV / XLSX
+          Load CSV / TSV / XLSX / JSON
         </div>
       ) : (
         <>

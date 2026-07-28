@@ -46,7 +46,7 @@ export const CIDOC_COLOR_ANCHORS = [
 // Default for anything that doesn't match
 export const CIDOC_DEFAULT_COLOR     = '#ffffff'
 export const CIDOC_DEFAULT_TEXT      = '#1a1a1a'
-export const CIDOC_PROPERTY_COLOR    = '#a8326a'   // edge colour (berry theme)
+export const CIDOC_PROPERTY_COLOR    = '#db2777'   // edge colour (brand pink)
 
 /**
  * Extract the local name from a full URI.

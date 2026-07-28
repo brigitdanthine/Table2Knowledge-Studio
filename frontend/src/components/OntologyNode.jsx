@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Handle, Position } from 'reactflow'
-import { Tag, Link2, X } from 'lucide-react'
+import { Tag, Link2, X, Globe2 } from 'lucide-react'
 import { contrastText } from '../utils/cidocColors.js'
 
 export function OntologyNode({ id, data, selected }) {
@@ -8,10 +8,16 @@ export function OntologyNode({ id, data, selected }) {
   const [labelValue, setLabelValue]     = useState(data.instanceLabel || '')
   const [overColumn, setOverColumn]     = useState(false)
   const [overLabel,  setOverLabel]      = useState(false)
+  const [editingExplorerLabel, setEditingExplorerLabel] = useState(false)
+  const [explorerLabelValue, setExplorerLabelValue]     = useState(data.explorerLabel || '')
 
   useEffect(() => {
     setLabelValue(data.instanceLabel || '')
   }, [data.instanceLabel])
+
+  useEffect(() => {
+    setExplorerLabelValue(data.explorerLabel || '')
+  }, [data.explorerLabel])
 
   const bgColor     = data.nodeColor || '#ffffff'
   const textColor   = contrastText(bgColor)
@@ -21,6 +27,11 @@ export function OntologyNode({ id, data, selected }) {
   const handleLabelSubmit = () => {
     setEditingLabel(false)
     data.onLabelChange?.(id, labelValue)
+  }
+
+  const handleExplorerLabelSubmit = () => {
+    setEditingExplorerLabel(false)
+    data.onExplorerLabelChange?.(id, explorerLabelValue)
   }
 
   const dropZone = (zone) => ({
@@ -116,19 +127,69 @@ export function OntologyNode({ id, data, selected }) {
           display: 'flex', flexDirection: 'column', gap: 4,
         }}>
 
+          {/* Graph Explorer display name — overrides the CIDOC class name
+              shown in the standalone Graph Explorer only (RDF export is
+              unaffected). Lets identically-classed nodes used for
+              different purposes (e.g. three E55_Type nodes for relation
+              type / material / SE-Art) show up as distinct, readable
+              types there. */}
+          <div
+            onMouseDown={e => e.stopPropagation()}
+            title="Display name in the Graph Explorer (replaces the CIDOC class there; the RDF export stays unchanged)"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '3px 6px', borderRadius: 4, minHeight: 22,
+              border: `1px dashed ${adjustColor(bgColor, -35)}`,
+              background: 'rgba(255,255,255,0.35)',
+            }}
+          >
+            <Globe2 size={9} color={explorerLabelValue ? '#b01f5f' : adjustColor(bgColor, -50)} style={{ flexShrink: 0 }} />
+            {editingExplorerLabel ? (
+              <input
+                autoFocus
+                value={explorerLabelValue}
+                onChange={e => setExplorerLabelValue(e.target.value)}
+                onBlur={handleExplorerLabelSubmit}
+                onKeyDown={e => e.key === 'Enter' && handleExplorerLabelSubmit()}
+                onClick={e => e.stopPropagation()}
+                style={{
+                  fontSize: 10, padding: '1px 4px', flex: 1,
+                  background: 'rgba(255,255,255,0.8)',
+                  border: '1px solid rgba(0,0,0,0.2)',
+                  borderRadius: 3, color: '#1a1a1a',
+                  fontFamily: "'IBM Plex Sans', sans-serif",
+                }}
+                placeholder="e.g. Stratigraphic Unit"
+              />
+            ) : (
+              <span
+                onClick={(e) => { e.stopPropagation(); setEditingExplorerLabel(true) }}
+                style={{
+                  fontSize: 10,
+                  color: explorerLabelValue ? darkenColor(bgColor, 60) : adjustColor(bgColor, -55),
+                  flex: 1, cursor: 'text',
+                  fontStyle: explorerLabelValue ? 'normal' : 'italic',
+                  whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                }}
+              >
+                {explorerLabelValue || 'Explorer-Name…'}
+              </span>
+            )}
+          </div>
+
           <div
             {...dropZone('label')}
             title="Drop column → Domain_label / Range_Label"
             style={{
               display: 'flex', alignItems: 'center', gap: 5,
               padding: '3px 6px', borderRadius: 4, minHeight: 24,
-              border: `1px ${overLabel ? 'solid' : 'dashed'} ${overLabel ? '#c95d8f' : adjustColor(bgColor, -35)}`,
-              background: overLabel ? 'rgba(168,50,106,0.1)' : 'rgba(255,255,255,0.35)',
+              border: `1px ${overLabel ? 'solid' : 'dashed'} ${overLabel ? '#e8639d' : adjustColor(bgColor, -35)}`,
+              background: overLabel ? 'rgba(219,39,119,0.1)' : 'rgba(255,255,255,0.35)',
               transition: 'all 0.12s',
             }}
           >
             <Tag size={9}
-              color={data.labelColumn ? '#8a2858' : overLabel ? '#c95d8f' : adjustColor(bgColor, -50)}
+              color={data.labelColumn ? '#b01f5f' : overLabel ? '#e8639d' : adjustColor(bgColor, -50)}
               style={{ flexShrink: 0 }}
             />
             {data.labelColumn ? (
@@ -143,7 +204,7 @@ export function OntologyNode({ id, data, selected }) {
                 <button
                   onMouseDown={e => e.stopPropagation()}
                   onClick={(e) => { e.stopPropagation(); data.onLabelColumnDrop?.(id, null) }}
-                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '0 2px', opacity: 0.5, color: '#8a2858' }}
+                  style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '0 2px', opacity: 0.5, color: '#b01f5f' }}
                 >
                   <X size={9} />
                 </button>
@@ -170,7 +231,7 @@ export function OntologyNode({ id, data, selected }) {
                 onClick={(e) => { e.stopPropagation(); setEditingLabel(true) }}
                 style={{
                   fontSize: 10,
-                  color: labelValue ? darkenColor(bgColor, 60) : (overLabel ? '#8a2858' : adjustColor(bgColor, -55)),
+                  color: labelValue ? darkenColor(bgColor, 60) : (overLabel ? '#b01f5f' : adjustColor(bgColor, -55)),
                   flex: 1, cursor: 'text',
                   fontStyle: labelValue ? 'normal' : 'italic',
                   whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
@@ -191,13 +252,13 @@ export function OntologyNode({ id, data, selected }) {
             style={{
               display: 'flex', alignItems: 'center', gap: 5,
               padding: '3px 6px', borderRadius: 4, minHeight: 24,
-              border: `1px ${overColumn ? 'solid' : 'dashed'} ${overColumn ? '#1f8da6' : adjustColor(bgColor, -35)}`,
-              background: overColumn ? 'rgba(31,141,166,0.1)' : 'rgba(255,255,255,0.35)',
+              border: `1px ${overColumn ? 'solid' : 'dashed'} ${overColumn ? '#0f97a8' : adjustColor(bgColor, -35)}`,
+              background: overColumn ? 'rgba(25,190,207,0.1)' : 'rgba(255,255,255,0.35)',
               transition: 'all 0.12s',
             }}
           >
             <Link2 size={9}
-              color={data.mappedColumn ? '#8a2858' : overColumn ? '#1f8da6' : adjustColor(bgColor, -50)}
+              color={data.mappedColumn ? '#b01f5f' : overColumn ? '#0f97a8' : adjustColor(bgColor, -50)}
               style={{ flexShrink: 0 }}
             />
             {data.mappedColumn ? (
@@ -220,7 +281,7 @@ export function OntologyNode({ id, data, selected }) {
             ) : (
               <span style={{
                 fontSize: 9,
-                color: overColumn ? '#167a91' : adjustColor(bgColor, -55),
+                color: overColumn ? '#0b7d8b' : adjustColor(bgColor, -55),
                 fontStyle: 'italic', flex: 1,
               }}>
                 {overColumn ? '← Drop ID column' : 'ID column…'}
@@ -242,16 +303,16 @@ export function OntologyNode({ id, data, selected }) {
               display: 'flex', alignItems: 'center', gap: 4,
               padding: '2px 6px', borderRadius: 3, cursor: 'pointer',
               fontSize: 9, userSelect: 'none',
-              background: data.noPrefix ? 'rgba(31,141,166,0.1)' : 'transparent',
-              color: data.noPrefix ? '#1f8da6' : adjustColor(bgColor, -50),
-              border: `1px solid ${data.noPrefix ? 'rgba(31,141,166,0.25)' : 'transparent'}`,
+              background: data.noPrefix ? 'rgba(25,190,207,0.1)' : 'transparent',
+              color: data.noPrefix ? '#0f97a8' : adjustColor(bgColor, -50),
+              border: `1px solid ${data.noPrefix ? 'rgba(15,151,168,0.25)' : 'transparent'}`,
               transition: 'all 0.12s',
             }}
           >
             <span style={{
               width: 10, height: 10, borderRadius: 2,
-              border: `1.5px solid ${data.noPrefix ? '#1f8da6' : adjustColor(bgColor, -40)}`,
-              background: data.noPrefix ? '#1f8da6' : 'transparent',
+              border: `1.5px solid ${data.noPrefix ? '#0f97a8' : adjustColor(bgColor, -40)}`,
+              background: data.noPrefix ? '#0f97a8' : 'transparent',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 7, color: '#fff', fontWeight: 700,
             }}>
@@ -270,13 +331,13 @@ export function OntologyNode({ id, data, selected }) {
 function DotOneMidpoint({ id, data }) {
   const dotStyle = {
     width: 14, height: 14, borderRadius: '50%',
-    background: '#a8326a', border: '2px solid #8a2858',
-    boxShadow: '0 0 6px rgba(168,50,106,0.3)',
+    background: '#db2777', border: '2px solid #b01f5f',
+    boxShadow: '0 0 6px rgba(219,39,119,0.3)',
     position: 'relative',
     cursor: 'default',
   }
   const hStyle = {
-    background: '#a8326a', width: 7, height: 7,
+    background: '#db2777', width: 7, height: 7,
     border: '1.5px solid #fff', borderRadius: '50%', zIndex: 10,
   }
   return (

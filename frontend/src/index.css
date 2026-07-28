@@ -9,13 +9,27 @@
   --text: #1e2d33;
   --text-dim: #4a5e66;
   --text-muted: #8a9ea6;
-  --accent: #1f8da6;
-  --accent-dim: #167a91;
-  --accent-glow: rgba(31, 141, 166, 0.12);
-  --green: #32A88B;
-  --orange: #d48c1a;
-  --red: #c94052;
-  --purple: #a8326a;
+
+  /* ── Brand palette ─────────────────────────────────────────────────────
+     The four brand hues, used at full brightness for graph elements and
+     tinted fills (edges, handles, badge backgrounds, glows). Because the
+     UI is a light theme, each hue also has a darker, same-hue companion
+     below that is used wherever the colour has to stay legible as text or
+     as a thin border on white.                                            */
+  --brand-cyan:   #19becf;
+  --brand-pink:   #db2777;
+  --brand-green:  #5cec94;
+  --brand-yellow: #ffbf28;
+
+  --accent: #0f97a8;                          /* cyan, text-safe   */
+  --accent-dim: #0b7d8b;
+  --accent-glow: rgba(25, 190, 207, 0.14);
+  --green: #14a35c;                           /* green, text-safe  */
+  --green-glow: rgba(92, 236, 148, 0.18);
+  --orange: #a37200;                          /* yellow, text-safe */
+  --orange-glow: rgba(255,191,40,0.18);
+  --purple: #db2777;                          /* pink              */
+  --red: #c94052;                             /* errors — outside the brand palette on purpose */
   --radius: 6px;
   --radius-lg: 10px;
   --font: 'IBM Plex Sans', sans-serif;
@@ -63,7 +77,7 @@ button {
   padding: 6px 14px;
   font-weight: 500;
 }
-.btn-primary:hover { background: #1a7a91; }
+.btn-primary:hover { background: var(--accent-dim); }
 
 .btn-secondary {
   background: var(--bg-panel);
@@ -116,9 +130,9 @@ input::placeholder { color: var(--text-muted); }
   border: 1px solid var(--border);
   color: var(--text-dim);
 }
-.tag.accent { background: var(--accent-glow); border-color: rgba(31,141,166,0.3); color: var(--accent); }
-.tag.green { background: rgba(50, 168, 139, 0.08); border-color: rgba(50,168,139,0.25); color: var(--green); }
-.tag.orange { background: rgba(212,140,26,0.08); border-color: rgba(212,140,26,0.25); color: var(--orange); }
+.tag.accent { background: var(--accent-glow); border-color: rgba(25,190,207,0.4); color: var(--accent); }
+.tag.green { background: var(--green-glow); border-color: rgba(20,163,92,0.3); color: var(--green); }
+.tag.orange { background: var(--orange-glow); border-color: rgba(163,114,0,0.3); color: var(--orange); }
 
 /* Drag items */
 .draggable-item {
@@ -171,9 +185,9 @@ input::placeholder { color: var(--text-muted); }
   max-width: 320px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-.toast.success { background: rgba(50,168,139,0.1); border-color: rgba(50,168,139,0.3); color: var(--green); }
+.toast.success { background: var(--green-glow); border-color: rgba(20,163,92,0.35); color: var(--green); }
 .toast.error { background: rgba(201,64,82,0.1); border-color: rgba(201,64,82,0.3); color: var(--red); }
-.toast.info { background: var(--accent-glow); border-color: rgba(31,141,166,0.3); color: var(--accent); }
+.toast.info { background: var(--accent-glow); border-color: rgba(25,190,207,0.45); color: var(--accent); }
 
 @keyframes slideIn {
   from { transform: translateX(20px); opacity: 0; }

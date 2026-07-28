@@ -120,7 +120,7 @@ export function exportGraphML(nodes, edges) {
     lines.push(`    <edge id="${escXml(edge.id)}" source="${escXml(source)}" target="${escXml(target)}">`)
     lines.push(`      <data key="e_yed">`)
     lines.push(`        <y:PolyLineEdge>`)
-    lines.push(`          <y:LineStyle color="#A8326A" type="line" width="1.0"/>`)
+    lines.push(`          <y:LineStyle color="#db2777" type="line" width="1.0"/>`)
     lines.push(`          <y:Arrows source="none" target="standard"/>`)
     lines.push(`          <y:EdgeLabel alignment="center" configuration="AutoFlippingLabel" distance="2.0" fontFamily="Dialog" fontSize="10" fontStyle="plain" hasBackgroundColor="false" hasLineColor="false" modelName="custom" preferredPlacement="anywhere" ratio="0.5" textColor="#666666" visible="true">${edgeLabel}${dotOneLabel}<y:LabelModel><y:SmartEdgeLabelModel autoRotationEnabled="false" defaultAngle="0.0" defaultDistance="10.0"/></y:LabelModel><y:ModelParameter><y:SmartEdgeLabelModelParameter angle="0.0" distance="30.0" distanceToCenter="true" position="right" ratio="0.5" segment="0"/></y:ModelParameter><y:PreferredPlacementDescriptor angle="0.0" angleOffsetOnRightSide="0" angleReference="absolute" angleRotationOnRightSide="co" distance="-1.0" frozen="true" placement="anywhere" side="anywhere" sideReference="relative_to_edge_flow"/></y:EdgeLabel>`)
     lines.push(`          <y:BendStyle smoothed="false"/>`)
@@ -194,6 +194,16 @@ function applyPrefix(value, idPrefix) {
   const pfx = idPrefix.trim().endsWith(':') ? idPrefix.trim() : idPrefix.trim() + ':'
   if (/^[a-zA-Z][a-zA-Z0-9_]*:/.test(v)) return v   // already prefixed
   return pfx + v
+}
+
+// TSV fields are joined with \t and rows with \n, with no quoting/escaping
+// mechanism -- any of those characters embedded in a raw cell value (Excel
+// multi-line text, stray tabs) would otherwise corrupt the row structure
+// once serialised. Collapse them to spaces so the row stays intact; the
+// stray \t.../\n are never meaningful content in an ID/label/note value.
+function sanitizeTsvValue(v) {
+  if (v == null) return v
+  return String(v).replace(/\r\n|\r|\n|\t/g, ' ')
 }
 
 function getNodeRows(nodeData, globalTableData) {
@@ -289,7 +299,9 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
     'ID_of_Domain', 'Domain_label', 'Class_of_domain',
     'Property',
     'ID_of_the_range', 'Range_Label', 'Class_of_the_range',
-    'Dot_one', 'Dot_one_target', 'I4_Proposition_Set',
+    'Dot_one', 'Dot_one_target', 'I4_Proposition_Set', 'No_Inverse',
+    'Domain_explorer_label', 'Range_explorer_label', 'Property_explorer_label',
+    'Inverse_Property_URI',
   ]
 
   // Build named graph lookup: nodeId -> graph label
@@ -334,6 +346,7 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
       dotOnePropUri: edge.data.dotOnePropUri || (dotEdge ? (dotEdge.data?.propertyUri || '') : ''),
       dotNodeCol: dotNodeCol,
       dotNodeRows: dotNodeRows,
+      dotNodeTableId: dotTargetNode?.data?.tableId || null,
       staticVal: staticVal,
     }
   }
@@ -393,6 +406,18 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
 
     const domainClass = shortenUri(src.data?.uri || '', prefixMap)
     const rangeClass  = shortenUri(tgt.data?.uri || '', prefixMap)
+    // Graph Explorer-only display name override (RDF export ignores this;
+    // it still uses domainClass/rangeClass above unchanged).
+    const domainExplorerLabel = (src.data?.explorerLabel || '').trim()
+    const rangeExplorerLabel  = (tgt.data?.explorerLabel || '').trim()
+    const propExplorerLabel   = (edge.data?.explorerLabel || '').trim()
+    // Manual inverse-property override (only needed when the loaded ontology
+    // doesn't declare an owl:inverseOf for this property, or a custom/
+    // free-text property is used) -- round-tripped the same way as the
+    // property URI itself (shortened here, expanded back to a full URI in
+    // exportRdfPipelineTSV).
+    const inversePropUriRaw = edge.data?.inversePropertyUri || ''
+    const inversePropShort = shortenUri(inversePropUriRaw, prefixMap) || inversePropUriRaw
 
     // Dot-One property: prefer URI (shortened), fallback with smart auto-prefix
     const dInfo = dotOneInfo[edge.id] || null
@@ -410,16 +435,33 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
     const srcRows    = getNodeRows(src.data, globalTableData) || []
     const tgtRows    = getNodeRows(tgt.data, globalTableData) || []
 
-    // push: resolve dot-one target PER ROW using the row index
-    const push = (domainId, domainLbl, rangeId, rangeLbl, rowIdx) => {
+    // push: resolve dot-one target PER ROW using the actual matched row
+    // objects (NOT a bare positional index — src and tgt can come from
+    // differently-sized tables, e.g. a join between a 66-row inventory
+    // table and a 176-row relation table, so a single index would silently
+    // pick an unrelated row on whichever side has more/fewer rows).
+    const push = (domainId, domainLbl, rangeId, rangeLbl, sRow, tRow) => {
       if (!rangeId) return   // always skip empty range
 
       // Resolve dot-one target for THIS specific row
       let dotOneTarget = ''
       if (dInfo) {
         if (dInfo.dotNodeCol && dInfo.dotNodeRows?.length > 0) {
-          // Same table as source → use same row index
-          const dotRow = dInfo.dotNodeRows[rowIdx] || dInfo.dotNodeRows[0]
+          // Pick whichever side's row actually belongs to the dot-one
+          // node's own table, by tableId first, falling back to a
+          // content-signature match for older projects without tableId.
+          let dotRow = null
+          if (dInfo.dotNodeTableId && srcTableId && dInfo.dotNodeTableId === srcTableId) {
+            dotRow = sRow
+          } else if (dInfo.dotNodeTableId && tgtTableId && dInfo.dotNodeTableId === tgtTableId) {
+            dotRow = tRow
+          } else if (sRow && sameTableData(dInfo.dotNodeRows, srcRows)) {
+            dotRow = sRow
+          } else if (tRow && sameTableData(dInfo.dotNodeRows, tgtRows)) {
+            dotRow = tRow
+          } else {
+            dotRow = tRow || sRow || dInfo.dotNodeRows[0]
+          }
           const val = dotRow ? dotRow[dInfo.dotNodeCol] : ''
           dotOneTarget = val ? applyPrefix(String(val), idPrefix) : ''
         } else {
@@ -429,17 +471,28 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
         dotOneTarget = edge.data.dotOneTarget
       }
 
+      // TSV has no quoting/escaping convention (unlike CSV) -- a raw
+      // newline or tab inside a cell value (e.g. a multi-line
+      // "Befundbeschreibung" typed with Alt+Enter in Excel) would
+      // otherwise prematurely split this single row into multiple
+      // corrupted ones once serialised, silently truncating the value
+      // and misaligning every column after it.
       outputRows.push({
-        domainId, domainLbl, domainClass, prop: propShort,
-        rangeId, rangeLbl, rangeClass,
-        dotOne: edgeDotOne, dotOneTarget: dotOneTarget, i4,
+        domainId: sanitizeTsvValue(domainId), domainLbl: sanitizeTsvValue(domainLbl), domainClass, prop: propShort,
+        rangeId: sanitizeTsvValue(rangeId), rangeLbl: sanitizeTsvValue(rangeLbl), rangeClass,
+        dotOne: edgeDotOne, dotOneTarget: sanitizeTsvValue(dotOneTarget), i4,
+        noInverse: edge.data?.noInverse ? '1' : '',
+        domainExplorerLabel: sanitizeTsvValue(domainExplorerLabel),
+        rangeExplorerLabel: sanitizeTsvValue(rangeExplorerLabel),
+        propExplorerLabel: sanitizeTsvValue(propExplorerLabel),
+        inversePropUri: sanitizeTsvValue(inversePropShort),
       })
     }
 
     // ── Case D: both static ──────────────────────────────────────────────────
     if (!srcHasCol && !tgtHasCol) {
       push(src.data?.instanceLabel || '', src.data?.instanceLabel || '',
-           tgt.data?.instanceLabel || '', tgt.data?.instanceLabel || '', 0)
+           tgt.data?.instanceLabel || '', tgt.data?.instanceLabel || '', null, null)
       continue
     }
 
@@ -456,7 +509,8 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
           getLabelValue(src.data, srcRows[i] || null),
           getIdValue(tgt.data, tgtRows[i] || null, idPrefix),
           getLabelValue(tgt.data, tgtRows[i] || null),
-          i,
+          srcRows[i] || null,
+          tgtRows[i] || null,
         )
       }
       continue
@@ -468,7 +522,7 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
       const rangeLbl = tgt.data?.instanceLabel || ''
       for (let _cx = 0; _cx < srcRows.length; _cx++) {
         const sRow = srcRows[_cx]
-        push(getIdValue(src.data, sRow, idPrefix), getLabelValue(src.data, sRow), rangeId, rangeLbl, _cx)
+        push(getIdValue(src.data, sRow, idPrefix), getLabelValue(src.data, sRow), rangeId, rangeLbl, sRow, null)
       }
       continue
     }
@@ -513,7 +567,7 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
           domainId  = src.data?.instanceLabel || ''
           domainLbl = src.data?.instanceLabel || ''
         }
-        push(domainId, domainLbl, rangeId, rangeLbl, tgtRows.indexOf(tRow))
+        push(domainId, domainLbl, rangeId, rangeLbl, null, tRow)
       }
       continue
     }
@@ -545,7 +599,7 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
           const pairKey   = `${domainId}|${rangeId}`
           if (!seen.has(pairKey)) {
             seen.add(pairKey)
-            push(domainId, domainLbl, rangeId, rangeLbl, srcRows.indexOf(sRow))
+            push(domainId, domainLbl, rangeId, rangeLbl, sRow, tRow)
           }
         }
       }
@@ -562,7 +616,7 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
         const domainId = tRow[joinCol] != null ? applyPrefix(tRow[joinCol], idPrefix) : ''
         const domainLbl = getLabelValue(src.data, null)
         const key = `${domainId}|${rangeId}`
-        if (!seen.has(key)) { seen.add(key); push(domainId, domainLbl, rangeId, rangeLbl, tgtRows.indexOf(tRow)) }
+        if (!seen.has(key)) { seen.add(key); push(domainId, domainLbl, rangeId, rangeLbl, null, tRow) }
       }
       continue
     }
@@ -590,7 +644,7 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
           const pairKey   = `${domainId}|${rangeId}`
           if (!seen.has(pairKey)) {
             seen.add(pairKey)
-            push(domainId, domainLbl, rangeId, rangeLbl, srcRows.indexOf(sRow))
+            push(domainId, domainLbl, rangeId, rangeLbl, sRow, tRow)
           }
         }
       }
@@ -599,13 +653,15 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
       const total = srcRows.length * tgtRows.length
       if (total > 500) {
         outputRows.push({
-          domainId:   '⚠ kein Join-Key gefunden',
-          domainLbl:  `${srcRows.length} × ${tgtRows.length} Zeilen`,
+          domainId:   '⚠ no join key found',
+          domainLbl:  `${srcRows.length} × ${tgtRows.length} rows`,
           domainClass, prop: propShort,
           rangeId:    '⚠ kartesisches Produkt verhindert',
           rangeLbl:   'Join-Key im Property-Dialog setzen',
           rangeClass,
-          dotOne: '', dotOneTarget: '', i4: '',
+          dotOne: '', dotOneTarget: '', i4: '', noInverse: '',
+          domainExplorerLabel: '', rangeExplorerLabel: '', propExplorerLabel: '',
+          inversePropUri: '',
         })
       } else {
         const seen = new Set()
@@ -618,7 +674,7 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
             const pairKey   = `${domainId}|${rangeId}`
             if (!seen.has(pairKey)) {
               seen.add(pairKey)
-              push(domainId, domainLbl, rangeId, rangeLbl, srcRows.indexOf(sRow))
+              push(domainId, domainLbl, rangeId, rangeLbl, sRow, tRow)
             }
           }
         }
@@ -632,7 +688,9 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
     tsvRows.push([
       r.domainId, r.domainLbl, r.domainClass, r.prop,
       r.rangeId, r.rangeLbl, r.rangeClass,
-      r.dotOne || '', r.dotOneTarget || '', r.i4 || '',
+      r.dotOne || '', r.dotOneTarget || '', r.i4 || '', r.noInverse || '',
+      r.domainExplorerLabel || '', r.rangeExplorerLabel || '', r.propExplorerLabel || '',
+      r.inversePropUri || '',
     ].join('\t'))
   }
   return tsvRows.join('\n')
@@ -648,11 +706,19 @@ export function exportMappingTSV(nodes, edges, globalTableData, prefixMap = {}, 
 //   2. Triples_URI_literal.tsv – rows where range class IS a literal type (xsd:*, geo:wktLiteral)
 
 const LITERAL_PATTERNS = ['xsd:', 'geo:wktLiteral']
+// Full-URI fallbacks for when the corresponding prefix (xsd:/geo:) isn't
+// registered in the project's Prefix Manager -- shortenUri() then leaves
+// rangeClass as the unshortened URI, and the prefixed patterns above never
+// match, silently routing what should be a literal row (with a raw value
+// like a WKT string containing spaces/parens) into the URI-row path
+// instead, where it gets rejected as an invalid URI during RDF export.
+const LITERAL_URI_PATTERNS = ['http://www.w3.org/2001/XMLSchema#', 'geosparql#wktLiteral', '#wktLiteral']
 
 function isLiteralRange(rangeClass) {
   if (!rangeClass) return false
   const rc = String(rangeClass).trim()
-  return LITERAL_PATTERNS.some(pat => rc.startsWith(pat) || rc.includes(pat))
+  if (LITERAL_PATTERNS.some(pat => rc.startsWith(pat) || rc.includes(pat))) return true
+  return LITERAL_URI_PATTERNS.some(pat => rc.includes(pat))
 }
 
 /**
@@ -685,6 +751,11 @@ export function exportRdfPipelineTSV(nodes, edges, globalTableData, prefixMap = 
       dotOne:      cols[7] || '',
       dotOneTarget:cols[8] || '',
       i4:          cols[9] || '',
+      noInverse:   cols[10] || '',
+      domainExplorerLabel: cols[11] || '',
+      rangeExplorerLabel:  cols[12] || '',
+      propExplorerLabel:   cols[13] || '',
+      inversePropUri:      cols[14] || '',
     }
   }).filter(r => r.domainId || r.rangeId) // skip completely empty rows
 
@@ -701,6 +772,11 @@ export function exportRdfPipelineTSV(nodes, edges, globalTableData, prefixMap = 
     dot_one_uri:            expandPrefix(r.dotOne,      prefixMap),
     dot_one_target_uri:     expandPrefix(r.dotOneTarget,prefixMap),
     i4_uri:                 expandPrefix(r.i4,          prefixMap),
+    no_inverse:             r.noInverse || '',
+    domain_explorer_label:  r.domainExplorerLabel || '',
+    range_explorer_label:   r.rangeExplorerLabel || '',
+    property_explorer_label: r.propExplorerLabel || '',
+    inverse_property_uri:   expandPrefix(r.inversePropUri, prefixMap),
   })
 
   // Split into URI vs literal rows
@@ -719,14 +795,18 @@ export function exportRdfPipelineTSV(nodes, edges, globalTableData, prefixMap = 
   const uriHeaders = [
     'id_of_domain_uri', 'class_of_domain_uri', 'domain_label', 'p3_has_note',
     'property_uri', 'id_of_the_range_uri', 'class_of_the_range_uri', 'range_label',
-    'dot_one_uri', 'dot_one_target_uri', 'i4_uri',
+    'dot_one_uri', 'dot_one_target_uri', 'i4_uri', 'no_inverse',
+    'domain_explorer_label', 'range_explorer_label', 'property_explorer_label',
+    'inverse_property_uri',
   ]
 
   // Literal TSV has slightly different column order (matching Table2RDF's SQL output)
   const litHeaders = [
     'id_of_domain_uri', 'class_of_domain_uri', 'domain_label',
     'property_uri', 'id_of_the_range_uri', 'class_of_the_range_uri', 'range_label',
-    'dot_one_uri', 'dot_one_target_uri', 'p3_has_note', 'i4_uri',
+    'dot_one_uri', 'dot_one_target_uri', 'p3_has_note', 'i4_uri', 'no_inverse',
+    'domain_explorer_label', 'range_explorer_label', 'property_explorer_label',
+    'inverse_property_uri',
   ]
 
   const buildTSV = (headers, rows) => {

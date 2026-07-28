@@ -30,19 +30,19 @@ import { api } from './utils/api.js'
 
 let nodeCounter = 1
 
-const EDGE_STYLE  = { stroke: '#a8326a', strokeWidth: 1.5 }
-const EDGE_MARKER = { type: MarkerType.ArrowClosed, color: '#a8326a', width: 14, height: 14 }
+const EDGE_STYLE  = { stroke: '#db2777', strokeWidth: 1.5 }
+const EDGE_MARKER = { type: MarkerType.ArrowClosed, color: '#db2777', width: 14, height: 14 }
 const EDGE_LABEL_STYLE = {
-  labelStyle:      { fill: '#a8326a', fontFamily: "'IBM Plex Mono',monospace", fontSize: 10 },
+  labelStyle:      { fill: '#db2777', fontFamily: "'IBM Plex Mono',monospace", fontSize: 10 },
   labelBgStyle:    { fill: '#ffffff', fillOpacity: 0.95 },
   labelBgPadding:  [4, 6],
   labelBgBorderRadius: 3,
 }
 
-const DOTONE_EDGE_STYLE  = { stroke: '#a8326a', strokeWidth: 1.2, strokeDasharray: '6 3' }
-const DOTONE_EDGE_MARKER = { type: MarkerType.ArrowClosed, color: '#a8326a', width: 12, height: 12 }
+const DOTONE_EDGE_STYLE  = { stroke: '#db2777', strokeWidth: 1.2, strokeDasharray: '6 3' }
+const DOTONE_EDGE_MARKER = { type: MarkerType.ArrowClosed, color: '#db2777', width: 12, height: 12 }
 const DOTONE_LABEL_STYLE = {
-  labelStyle:      { fill: '#a8326a', fontFamily: "'IBM Plex Mono',monospace", fontSize: 9 },
+  labelStyle:      { fill: '#db2777', fontFamily: "'IBM Plex Mono',monospace", fontSize: 9 },
   labelBgStyle:    { fill: '#ffffff', fillOpacity: 0.95 },
   labelBgPadding:  [3, 5],
   labelBgBorderRadius: 3,
@@ -152,6 +152,29 @@ function GraphInner({
     if (col) toast.success(`ID column "${col.name}" assigned (${col.allRows?.length} rows)`)
   }, [setNodes, toast])
 
+  // Called when a table is re-uploaded under the same filename (see TablePanel).
+  // Pushes the fresh rows into every node that was already mapped to that table,
+  // so a corrected source file doesn't require re-dragging every column by hand.
+  const handleTableRefresh = useCallback((tableId, allRows, headers) => {
+    let updatedCount = 0
+    const missingColumns = new Set()
+    setNodes(ns => ns.map(n => {
+      if (n.data?.tableId !== tableId) return n
+      updatedCount++
+      if (headers) {
+        if (n.data.mappedColumn && !headers.includes(n.data.mappedColumn)) missingColumns.add(n.data.mappedColumn)
+        if (n.data.labelColumn && !headers.includes(n.data.labelColumn)) missingColumns.add(n.data.labelColumn)
+      }
+      return { ...n, data: { ...n.data, tableRows: allRows } }
+    }))
+    if (updatedCount > 0) {
+      toast.success(`Table refreshed — ${updatedCount} node${updatedCount === 1 ? '' : 's'} updated with the new data`)
+    }
+    if (missingColumns.size > 0) {
+      toast.error(`Column(s) no longer found in the refreshed table: "${[...missingColumns].join('", "')}" — check node mapping`)
+    }
+  }, [setNodes, toast])
+
   const handleLabelColumnDrop = useCallback((id, col) => {
     setNodes(ns => ns.map(n => n.id === id ? {
       ...n, data: {
@@ -173,6 +196,10 @@ function GraphInner({
     setNodes(ns => ns.map(n => n.id === id ? { ...n, data: { ...n.data, noPrefix } } : n))
   }, [setNodes])
 
+  const handleExplorerLabelChange = useCallback((id, explorerLabel) => {
+    setNodes(ns => ns.map(n => n.id === id ? { ...n, data: { ...n.data, explorerLabel } } : n))
+  }, [setNodes])
+
   const resolveNodeColor = useCallback(async (uri) => {
     try {
       const d = await api.getSuperclasses(uri)
@@ -192,13 +219,15 @@ function GraphInner({
     labelColumn:   null,
     instanceLabel: '',
     noPrefix:      false,
-    onDelete:           handleDeleteNode,
-    onLabelChange:      handleLabelChange,
-    onColumnDrop:       handleColumnDrop,
-    onLabelColumnDrop:  handleLabelColumnDrop,
-    onToggleNoPrefix:   handleToggleNoPrefix,
-    onFocus:            handleFocusNode,
-  }), [handleDeleteNode, handleLabelChange, handleColumnDrop, handleLabelColumnDrop, handleToggleNoPrefix, handleFocusNode])
+    explorerLabel: '',
+    onDelete:              handleDeleteNode,
+    onLabelChange:         handleLabelChange,
+    onColumnDrop:          handleColumnDrop,
+    onLabelColumnDrop:     handleLabelColumnDrop,
+    onToggleNoPrefix:      handleToggleNoPrefix,
+    onExplorerLabelChange: handleExplorerLabelChange,
+    onFocus:               handleFocusNode,
+  }), [handleDeleteNode, handleLabelChange, handleColumnDrop, handleLabelColumnDrop, handleToggleNoPrefix, handleExplorerLabelChange, handleFocusNode])
 
   const addNodeWithColor = useCallback(async (item, nodeType, pos) => {
     const id = `n${nodeCounter++}`
@@ -438,7 +467,7 @@ function GraphInner({
 
     if (item.type === 'subject') {
       const existing = rfInstance.getNodes().find(n => n.data.uri === item.uri)
-      if (existing) toast.info(`Hinweis: ${item.label} ist bereits im Graphen`)
+      if (existing) toast.info(`Note: ${item.label} is already in the graph`)
       addNodeWithColor(item, 'subject', pos)
     } else if (item.type === 'object') {
       const source = rfInstance.getNodes().find(n => n.selected)
@@ -502,6 +531,9 @@ function GraphInner({
           joinColumnTarget: updatedData.joinColumnTarget ?? e.data?.joinColumnTarget,
           dotOne: updatedData.dotOne ?? e.data?.dotOne,
           dotOneTarget: updatedData.dotOneTarget ?? e.data?.dotOneTarget,
+          noInverse: updatedData.noInverse ?? e.data?.noInverse ?? false,
+          inversePropertyUri: updatedData.inversePropertyUri ?? e.data?.inversePropertyUri ?? '',
+          explorerLabel: updatedData.explorerLabel ?? e.data?.explorerLabel ?? '',
         },
       }
     }))
@@ -609,7 +641,7 @@ function GraphInner({
       toast.error('No data to export — please load a table and assign columns')
       return
     }
-    toast.info(`RDF wird generiert (${result.uriRowCount} URI + ${result.literalRowCount} Literal rows)…`)
+    toast.info(`Generating RDF (${result.uriRowCount} URI + ${result.literalRowCount} literal rows)…`)
     try {
       const res = await api.exportRdf(result.uriTSV, result.literalTSV, format)
       if (res.triple_count === 0) {
@@ -622,7 +654,7 @@ function GraphInner({
       }
       downloadText(`ontology-export${res.extension}`, res.rdf, res.mime_type)
       const skippedMsg = res.skipped_uris?.length ? ` (${res.skipped_uris.length} URIs skipped)` : ''
-      toast.success(`${res.format} exportiert: ${res.triple_count} Triples${skippedMsg}`)
+      toast.success(`${res.format} exported: ${res.triple_count} triples${skippedMsg}`)
       if (res.skipped_uris?.length) {
         console.warn('Skipped URIs (unresolved):', res.skipped_uris)
       }
@@ -630,6 +662,61 @@ function GraphInner({
       toast.error('RDF export error: ' + e.message)
     }
   }
+
+  // ── Graph Explorer: collect schema info from current canvas ─────────────
+  const collectSchemaHints = useCallback(() => {
+    const currentNodes = rfInstance.getNodes()
+    const currentEdges = rfInstance.getEdges()
+    const typeColors = {}
+    const typeLabels = {}
+    currentNodes.forEach(n => {
+      if (n.type === 'dotOneMidpoint') return
+      const uri = n.data?.uri
+      const color = n.data?.nodeColor
+      const label = n.data?.rdfs_label || n.data?.label
+      if (uri) {
+        if (color) typeColors[uri] = color
+        if (label) typeLabels[uri] = label
+      }
+    })
+    const edgeLabels = {}
+    currentEdges.forEach(e => {
+      const uri = e.data?.propertyUri
+      const label = e.data?.label
+      if (uri && label) edgeLabels[uri] = label
+    })
+    return { typeColors, typeLabels, edgeLabels }
+  }, [rfInstance])
+
+  const handleExploreInGraphExplorer = useCallback(async () => {
+    const nsMap = {}
+    Object.entries(prefixMap).forEach(([pfx, ns]) => { nsMap[pfx] = ns })
+    const result = exportRdfPipelineTSV(rfInstance.getNodes(), rfInstance.getEdges(), tableData, nsMap, idPrefix, namedGraphs)
+    if (result.uriRowCount === 0 && result.literalRowCount === 0) {
+      toast.error('No data to explore — please load a table and assign columns')
+      return
+    }
+    toast.info('Preparing Graph Explorer…')
+    try {
+      const { typeColors, typeLabels, edgeLabels } = collectSchemaHints()
+      const projectTitle = rfInstance.getNodes().filter(n => n.type !== 'dotOneMidpoint').length > 0
+        ? 'OntoCartographer Graph Export'
+        : 'RDF Graph'
+      const graphJson = await api.exportGraphExplorerJson(
+        result.uriTSV, result.literalTSV,
+        projectTitle, typeColors, typeLabels, edgeLabels
+      )
+      if (!graphJson || !graphJson.nodes || Object.keys(graphJson.nodes).length === 0) {
+        toast.error('Graph Explorer: no nodes generated. Are all prefixes defined?')
+        return
+      }
+      // Download the JSON so it can be loaded into the Explorer
+      downloadText('graph-explorer-data.json', JSON.stringify(graphJson, null, 2), 'application/json')
+      toast.success(`Graph JSON exported: ${graphJson.meta?.node_count} nodes · ${graphJson.meta?.edge_count} edges — now drop it into the RDF Graph Explorer (graph-explorer-app)`)
+    } catch (e) {
+      toast.error('Graph Explorer export error: ' + e.message)
+    }
+  }, [rfInstance, prefixMap, tableData, idPrefix, namedGraphs, collectSchemaHints, toast])
 
   // ── Prefix Manager save handler ─────────────────────────────────────────
   const handlePrefixSave = useCallback((newMap, newIdPrefix) => {
@@ -661,12 +748,14 @@ function GraphInner({
       isFreeNode:    true,
       noPrefix:      label.startsWith('xsd:') || label.startsWith('geo:') ||
                      (uri && (uri.includes('xsd:') || uri.includes('XMLSchema') || uri.includes('geo:'))),
-      onDelete:           handleDeleteNode,
-      onLabelChange:      handleLabelChange,
-      onColumnDrop:       handleColumnDrop,
-      onLabelColumnDrop:  handleLabelColumnDrop,
-      onToggleNoPrefix:   handleToggleNoPrefix,
-      onFocus:            handleFocusNode,
+      explorerLabel: '',
+      onDelete:              handleDeleteNode,
+      onLabelChange:         handleLabelChange,
+      onColumnDrop:          handleColumnDrop,
+      onLabelColumnDrop:     handleLabelColumnDrop,
+      onToggleNoPrefix:      handleToggleNoPrefix,
+      onExplorerLabelChange: handleExplorerLabelChange,
+      onFocus:               handleFocusNode,
     }
 
     // Place near viewport center
@@ -690,11 +779,12 @@ function GraphInner({
     setFreeNodeUri('')
     setShowFreeNode(false)
   }, [freeNodeLabel, freeNodeUri, rfInstance, setNodes, handleDeleteNode, handleLabelChange,
-      handleColumnDrop, handleLabelColumnDrop, handleFocusNode, resolveNodeColor, toast])
+      handleColumnDrop, handleLabelColumnDrop, handleToggleNoPrefix, handleExplorerLabelChange,
+      handleFocusNode, resolveNodeColor, toast])
 
   const handleSaveProject = () => {
     const project = { version: 4, idPrefix, prefixMap, wideningParent, wideningChild: widening, namedGraphs, nodes: rfInstance.getNodes(), edges: rfInstance.getEdges() }
-    downloadText('ontology-mapper-project.json', JSON.stringify(project, null, 2), 'application/json')
+    downloadText('ontocartographer-project.json', JSON.stringify(project, null, 2), 'application/json')
     toast.success('Project saved')
   }
 
@@ -820,12 +910,13 @@ function GraphInner({
           ...n,
           data: {
             ...n.data,
-            onDelete:          handleDeleteNode,
-            onLabelChange:     handleLabelChange,
-            onColumnDrop:      handleColumnDrop,
-            onLabelColumnDrop: handleLabelColumnDrop,
-            onToggleNoPrefix:  handleToggleNoPrefix,
-            onFocus:           handleFocusNode,
+            onDelete:              handleDeleteNode,
+            onLabelChange:         handleLabelChange,
+            onColumnDrop:          handleColumnDrop,
+            onLabelColumnDrop:     handleLabelColumnDrop,
+            onToggleNoPrefix:      handleToggleNoPrefix,
+            onExplorerLabelChange: handleExplorerLabelChange,
+            onFocus:               handleFocusNode,
           },
         }))
 
@@ -866,14 +957,14 @@ function GraphInner({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
       <div style={{
-        display: 'flex', alignItems: 'center', gap: 12,
+        display: 'flex', alignItems: 'center', gap: 6,
         padding: '0 16px', height: 42, flexShrink: 0,
         background: 'var(--bg-card)', borderBottom: '1px solid var(--border)',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <img src="/logo.png" alt="Table2Knowledge" style={{ height: 28 }} />
+          <img src="/logo.png" alt="OntoCartographer" style={{ height: 28 }} />
           <span style={{ fontFamily: 'var(--font)', fontSize: 14, fontWeight: 600, color: 'var(--text)', letterSpacing: '0.02em' }}>
-            Table<span style={{ color: '#1f8da6' }}>2</span><span style={{ color: '#a8326a' }}>Knowledge</span>
+            <span style={{ color: '#0f97a8' }}>Onto</span><span style={{ color: '#db2777' }}>Cartographer</span>
             <span style={{ fontSize: 9, color: 'var(--text-muted)', fontWeight: 400, marginLeft: 6, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Studio</span>
           </span>
         </div>
@@ -909,7 +1000,7 @@ function GraphInner({
               )
             }).catch(() => {})
           }}
-          title="Namespace-Prefix Manager – ID-Prefix und alle Namespaces verwalten"
+          title="Namespace Prefix Manager – manage the ID prefix and all namespaces"
         >
           <Tag size={11} />
           <span style={{ fontFamily: 'var(--mono)', fontSize: 10 }}>{idPrefix || '?'}:</span>
@@ -943,8 +1034,8 @@ function GraphInner({
           style={{
             display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, padding: '4px 8px',
             borderRadius: 4, cursor: 'pointer', border: '1px solid',
-            background: wideningParent ? 'rgba(91,141,238,0.12)' : 'var(--bg)',
-            borderColor: wideningParent ? 'rgba(91,141,238,0.35)' : 'var(--border)',
+            background: wideningParent ? 'rgba(25,190,207,0.12)' : 'var(--bg)',
+            borderColor: wideningParent ? 'rgba(25,190,207,0.35)' : 'var(--border)',
             color: wideningParent ? 'var(--accent)' : 'var(--text-muted)',
             transition: 'all 0.15s',
           }}
@@ -953,7 +1044,7 @@ function GraphInner({
           <span>↑ Parent</span>
           <span style={{
             fontSize: 8, padding: '0 4px', borderRadius: 3,
-            background: wideningParent ? 'rgba(91,141,238,0.2)' : 'var(--bg-card)',
+            background: wideningParent ? 'rgba(25,190,207,0.2)' : 'var(--bg-card)',
             color: wideningParent ? 'var(--accent)' : 'var(--text-muted)',
             fontWeight: 600,
           }}>
@@ -966,9 +1057,9 @@ function GraphInner({
           style={{
             display: 'flex', alignItems: 'center', gap: 4, fontSize: 10, padding: '4px 8px',
             borderRadius: 4, cursor: 'pointer', border: '1px solid',
-            background: widening ? 'rgba(255,179,0,0.12)' : 'var(--bg)',
-            borderColor: widening ? 'rgba(255,179,0,0.35)' : 'var(--border)',
-            color: widening ? '#d48c1a' : 'var(--text-muted)',
+            background: widening ? 'rgba(255,191,40,0.12)' : 'var(--bg)',
+            borderColor: widening ? '#ffbf28' : 'var(--border)',
+            color: widening ? 'var(--orange)' : 'var(--text-muted)',
             transition: 'all 0.15s',
           }}
         >
@@ -976,8 +1067,8 @@ function GraphInner({
           <span>↓ Child</span>
           <span style={{
             fontSize: 8, padding: '0 4px', borderRadius: 3,
-            background: widening ? 'rgba(255,179,0,0.2)' : 'var(--bg-card)',
-            color: widening ? '#d48c1a' : 'var(--text-muted)',
+            background: widening ? 'rgba(255,191,40,0.25)' : 'var(--bg-card)',
+            color: widening ? 'var(--orange)' : 'var(--text-muted)',
             fontWeight: 600,
           }}>
             {widening ? 'ON' : 'OFF'}
@@ -990,16 +1081,16 @@ function GraphInner({
           className="btn-secondary"
           style={{
             display: 'flex', alignItems: 'center', gap: 5, fontSize: 11,
-            background: showGraphPanel ? 'rgba(168,50,106,0.1)' : undefined,
-            borderColor: showGraphPanel ? 'rgba(168,50,106,0.35)' : undefined,
-            color: showGraphPanel ? '#a8326a' : undefined,
+            background: showGraphPanel ? 'rgba(219,39,119,0.1)' : undefined,
+            borderColor: showGraphPanel ? 'rgba(219,39,119,0.35)' : undefined,
+            color: showGraphPanel ? '#db2777' : undefined,
           }}
           onClick={() => setShowGraphPanel(v => !v)}
-          title="Named Graphs (I4_Proposition_Set) verwalten"
+          title="Manage Named Graphs (I4_Proposition_Set)"
         >
           <Group size={11} /> Graphs
           {namedGraphs.length > 0 && (
-            <span style={{ fontSize: 9, padding: '0 4px', borderRadius: 3, background: 'rgba(168,50,106,0.15)', color: '#a8326a' }}>
+            <span style={{ fontSize: 9, padding: '0 4px', borderRadius: 3, background: 'rgba(219,39,119,0.15)', color: '#db2777' }}>
               {namedGraphs.length}
             </span>
           )}
@@ -1074,7 +1165,7 @@ function GraphInner({
           </select>
           <button style={{
               display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, borderRadius: '0 4px 4px 0',
-              background: '#a8326a', color: '#fff', padding: '6px 14px', fontWeight: 500,
+              background: '#db2777', color: '#fff', padding: '6px 14px', fontWeight: 500,
             }}
             onClick={() => handleExportRdf()}
             title="Direct RDF export of all instance data incl. Named Graphs">
@@ -1084,7 +1175,19 @@ function GraphInner({
         <button
           style={{
             display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 500,
-            background: showPipeline ? '#c99a00' : '#ffb300', color: '#1e2d33',
+            background: '#19becf', color: '#06363d',
+            padding: '6px 14px', borderRadius: 'var(--radius)',
+            border: '1px solid #0fa3b3',
+          }}
+          onClick={handleExploreInGraphExplorer}
+          title="Export graph JSON for Graph Explorer (graph-explorer.html)"
+        >
+          &#9906; Explore
+        </button>
+        <button
+          style={{
+            display: 'flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 500,
+            background: showPipeline ? '#e0a413' : '#ffbf28', color: '#1e2d33',
             padding: '6px 14px', borderRadius: 'var(--radius)',
           }}
           onClick={() => setShowPipeline(true)}
@@ -1101,7 +1204,7 @@ function GraphInner({
           padding: '8px 16px', flexShrink: 0,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-            <span style={{ fontSize: 10, fontWeight: 600, color: '#a8326a', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: 10, fontWeight: 600, color: '#db2777', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
               Named Graphs (I4_Proposition_Set)
             </span>
             <div style={{ flex: 1 }} />
@@ -1116,7 +1219,7 @@ function GraphInner({
               const selectedNodes = rfInstance.getNodes().filter(n => n.selected).map(n => n.id)
               if (selectedNodes.length === 0) { toast.error('Please select nodes in the graph first (Shift+Click or drag a selection box)'); return }
               const ng = { id: `ng_${Date.now()}`, label: ngLabel.trim(), nodeIds: selectedNodes,
-                color: ['#1f8da6','#a8326a','#32A88B','#d48c1a','#c94052','#7b68a8'][namedGraphs.length % 6] }
+                color: ['#0f97a8','#db2777','#14a35c','#a37200','#c94052','#7b68a8'][namedGraphs.length % 6] }
               setNamedGraphs(gs => [...gs, ng])
               setNgLabel('')
               toast.success(`Graph "${ng.label}" created with ${selectedNodes.length} Nodes`)
@@ -1164,7 +1267,7 @@ function GraphInner({
                         }, { duration: 300 })
                       }
                     }, 50)
-                    toast.info(`${ng.nodeIds.length} Nodes von "${ng.label}" selected`)
+                    toast.info(`${ng.nodeIds.length} nodes from "${ng.label}" selected`)
                   }}
                   title="Click to highlight and show nodes"
                 >
@@ -1216,7 +1319,7 @@ function GraphInner({
               <input
                 value={freeNodeLabel}
                 onChange={e => setFreeNodeLabel(e.target.value)}
-                placeholder="z.B. xsd:date"
+                placeholder="e.g. xsd:date"
                 style={{ width: 180, fontSize: 11, padding: '4px 8px', fontFamily: 'var(--mono)' }}
                 onKeyDown={e => e.key === 'Enter' && handleAddFreeNode()}
               />
@@ -1226,7 +1329,7 @@ function GraphInner({
               <input
                 value={freeNodeUri}
                 onChange={e => setFreeNodeUri(e.target.value)}
-                placeholder="z.B. http://www.w3.org/2001/XMLSchema#date"
+                placeholder="e.g. http://www.w3.org/2001/XMLSchema#date"
                 style={{ width: 340, fontSize: 11, padding: '4px 8px', fontFamily: 'var(--mono)' }}
                 onKeyDown={e => e.key === 'Enter' && handleAddFreeNode()}
               />
@@ -1262,7 +1365,7 @@ function GraphInner({
             <div key={i} style={{
               display: 'flex', alignItems: 'flex-start', gap: 6,
               padding: '3px 0', fontSize: 11,
-              color: issue.type === 'error' ? '#c94052' : issue.type === 'warn' ? '#d48c1a' : 'var(--text-muted)',
+              color: issue.type === 'error' ? '#c94052' : issue.type === 'warn' ? '#a37200' : 'var(--text-muted)',
             }}>
               <span style={{ flexShrink: 0, fontSize: 10, marginTop: 1 }}>
                 {issue.type === 'error' ? '●' : issue.type === 'warn' ? '▲' : '○'}
@@ -1279,7 +1382,7 @@ function GraphInner({
             <OntologyPanel widening={widening} wideningParent={wideningParent} />
           </div>
           <div style={{ display: activePanel === PANEL_TABLE ? 'flex' : 'none', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-            <TablePanel onAllRowsUpdate={() => {}} />
+            <TablePanel onAllRowsUpdate={() => {}} onTableRefresh={handleTableRefresh} />
           </div>
         </div>
         <div className="resize-handle" onMouseDown={onMouseDownResize} />
@@ -1316,7 +1419,7 @@ function GraphInner({
             }}>
               {nodeCount} Nodes · {edgeCount} Edges
               {edges.some(e => e.selected) && (
-                <span style={{ color: '#a8326a', marginLeft: 8 }}>
+                <span style={{ color: '#db2777', marginLeft: 8 }}>
                   ⊙ Edge selected — drag a class here for Dot-One
                 </span>
               )}
@@ -1327,7 +1430,7 @@ function GraphInner({
               position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center', pointerEvents: 'none', gap: 12,
             }}>
-              <img src="/logo.png" alt="Table2Knowledge" style={{ height: 100, opacity: 0.8 }} />
+              <img src="/logo.png" alt="OntoCartographer" style={{ height: 100, opacity: 0.8 }} />
               <div style={{ textAlign: 'center', color: 'var(--text-muted)', lineHeight: 2.2 }}>
                 <div style={{ fontSize: 14, color: 'var(--text-dim)' }}>Conceptual Graph</div>
                 <div style={{ fontSize: 11 }}>① Load ontology → ② Select subject → ③ Drag node here</div>
@@ -1405,7 +1508,7 @@ export default function App() {
   const [activePanel, setActivePanel] = useState(PANEL_ONTOLOGY)
   const [leftWidth,   setLeftWidth]   = useState(280)
   const [tableData,   setTableData]   = useState([])
-  const [idPrefix,  setIdPrefix]  = useState('oeai')
+  const [idPrefix,  setIdPrefix]  = useState('your_prefix')
   const [wideningParent, setWideningParent] = useState(true)
   const [wideningChild, setWideningChild] = useState(false)
   const [prefixMap, setPrefixMap] = useState({

@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="frontend/public/logo.png" alt="Table2Knowledge Studio" width="600">
+  <img src="frontend/public/logo.png" alt="OntoCartographer Studio" width="600">
 </p>
 
 <p align="center">
-  <strong>Turn spreadsheets into knowledge graphs — visually and without ontology expertise.</strong><br>
-  A drag-and-drop mapping tool for RDF/OWL ontologies with built-in RDF export for your own data.
+  <strong>Navigate ontologies, map tables, and chart your route to a knowledge graph.</strong><br>
+  OntoCartographer Studio is a visual mapping tool for turning tabular data (CSV, TSV, Excel) into ontology-based knowledge graphs. Connect classes, drag columns onto nodes, validate the mapping, and export your knowledge graph for RDF workflows, visual exploration, or publication.
 </p>
 
 <p align="center">
@@ -16,18 +16,18 @@
 
 ---
 
-## What is Table2Knowledge Studio?
+## What is OntoCartographer Studio?
 
-Table2Knowledge Studio is a localhost web application that lets you map tabular data (CSV, TSV, Excel) onto RDF/OWL ontologies through an intuitive visual interface. You build a conceptual graph by dragging ontology classes onto a canvas, connect them with properties, assign table columns to nodes, and export the result as RDF — ready for your triplestore.  
+OntoCartographer Studio is a localhost web application that lets you map tabular data (CSV, TSV, Excel) onto RDF/OWL ontologies through an intuitive visual interface. You build a conceptual graph by dragging ontology classes onto a canvas, connect them with properties, assign table columns to nodes, and export the result as RDF — ready for your triplestore.  
 It was originally developed for archaeological data modelling using CIDOC CRM and its extensions, but works with any **RDF/OWL ontology**.
 
-### Why Table2Knowledge Studio?
+### Why OntoCartographer Studio?
  
 - **No ontology expertise required** — visually map your data instead of a multi-step manual workflow
 - **Works with any RDF/OWL ontology** — optimized for CIDOC CRM and its extensions
 - **Visual graph builder** with automatic property suggestions based on domain/range inference (including dot-one properties and named graphs)
 - **Full table mapping** — Load CSV/TSV/XLSX files, drag column headers onto graph nodes to assign IDs and labels
-- **Publication-ready exports** — RDF (multiple formats), GraphML (yEd), PNG, SVG
+- **Publication-ready exports** — RDF (multiple formats), JSON, GraphML (yEd), PNG, SVG
 
 <details>
 <summary><b>See all features</b></summary>
@@ -49,7 +49,7 @@ It was originally developed for archaeological data modelling using CIDOC CRM an
 ---
 
 <details>
-<summary><h3 style="display:inline">Short overview of how Table2Knowledge Studio works</h3></summary>
+<summary><h3 style="display:inline">Short overview of how OntoCartographer Studio works</h3></summary>
 
 ### 1. Load an Ontology
 
@@ -92,14 +92,14 @@ Choose your export format:
  
 ### Prerequisites
  
-To run Table2Knowledge Studio you need Python (with pip) and Node.js (with npm):
+To run OntoCartographer Studio you need Python (with pip) and Node.js (with npm):
  
 - **Python 3.10+**: download from <https://www.python.org/downloads/>. Windows users: make sure to check **"Add Python to PATH"** during installation. Pip is included by default; if needed, install it separately: <https://pip.pypa.io/en/stable/installation/>
 - **Node.js 18+** (includes npm): download from <https://nodejs.org/en/download/>
 
 ### One-Click Setup (only needed once)
  
-Before using Table2Knowledge Studio, a virtual environment with all required dependencies must be set up once:
+Before using OntoCartographer Studio, a virtual environment with all required dependencies must be set up once:
  
 - **Windows:** double-click **`setup.bat`**
 - **Mac/Linux:** open a terminal in the project folder and run `bash setup.sh`
@@ -124,7 +124,7 @@ This automatically:
 <details>
 <summary><b>Manual Setup (alternative)</b></summary>
  
-If you prefer to install and start Table2Knowledge Studio manually:
+If you prefer to install and start OntoCartographer Studio manually:
  
 ```bash
 # Backend
@@ -149,6 +149,12 @@ Then open **<http://localhost:3000>**.
 
 ## Detailed User Guide
 
+> **📝 Note on this documentation**
+>
+> This release already includes a feature that is not yet described below: **assigning custom display names to nodes and connections**. These names are used exclusively in the JSON export for the upcoming **GraphExplorer** - they do not change your RDF output in any way. This guide will be extended once the GraphExplorer is released.
+>
+> The screenshots and GIFs still show version 1 (*Table2Knowledge Studio*). They will be replaced with recordings of the current version as soon as possible.
+
 ### Interface Overview
 
 | | Element | Details |
@@ -162,7 +168,7 @@ Then open **<http://localhost:3000>**.
 | ⑦ | [Parent/Child Widening](#widening-settings) | Enables or disables inherited properties from parent or child classes |
 | ⑧ | [Verify graph](#7-validate-your-graph) | Checks your graph for common issues such as missing mappings, orphan nodes, or ID/label swaps |
 | ⑨ | [Named Graphs](#4-named-graphs) | Groups nodes into named graphs (I4_Proposition_Set) with a colored bounding box |
-| ⑩ | [Export](#8-export) | Exports your graph as GraphML, PNG, SVG, various RDF formats, or starts the RDF Pipeline |
+| ⑩ | [Export](#8-export) | Exports your graph as GraphML, PNG, SVG, various RDF formats, as JSON for the GraphExplorer (under development) or starts the RDF Pipeline |
 
 <p>
     <img src="docs/images/overview_interface.png" alt="Overview Interface" width="1200">
@@ -255,7 +261,7 @@ The same principle applies to **Widening Child**: connecting `A8_Stratigraphic_U
  
 #### Dot-One Properties (RDF-star)
  
-Table2Knowledge supports annotating relationships — for example, typing a stratigraphic relation:
+OntoCartographer supports annotating relationships — for example, typing a stratigraphic relation:
  
 > *"SU1002 has a physical relation to SU1001, and that relation has type 'below'"*
  
@@ -380,7 +386,7 @@ You can also start the **RDF Pipeline**:
  
 ## Saving & Loading Projects
  
-You can save and load your Table2Knowledge Studio projects at any time. They are saved as JSON files containing:
+You can save and load your OntoCartographer Studio projects at any time. They are saved as JSON files containing:
  
 - All nodes with positions, colors, mapped columns, and table data
 - All edges with properties, join keys, and dot-one annotations
@@ -409,7 +415,7 @@ Load the `.xlsx` files via the Table Panel, open the project `.json` via **Load*
  
 ## CIDOC CRM Support
  
-While Table2Knowledge Studio works with any RDF/OWL ontology, it has built-in support for CIDOC CRM:
+While OntoCartographer Studio works with any RDF/OWL ontology, it has built-in support for CIDOC CRM:
  
 - **Color coding** — Nodes are colored by their CRM anchor class (e.g. brown for Physical Things, blue for Temporal Entities, pink for Actors)
 - **Label preference** — German `rdfs:label` translations are preferred, with fallback to English

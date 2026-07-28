@@ -76,14 +76,14 @@ export default function PropertyPickerModal({ sourceNode, targetNode, onConfirm,
             width: '100%', textAlign: 'left', padding: '7px 14px',
             background: isSel ? 'var(--accent-glow)' : 'transparent',
             border: 'none', cursor: 'pointer',
-            borderLeft: isSel ? '2px solid var(--accent)' : isWidened ? '2px solid #d48c1a' : '2px solid transparent',
+            borderLeft: isSel ? '2px solid var(--accent)' : isWidened ? '2px solid #a37200' : '2px solid transparent',
             display: 'flex', flexDirection: 'column', gap: 2, transition: 'background 0.1s',
           }}
           onMouseEnter={e => { if (!isSel) e.currentTarget.style.background = 'var(--bg-hover)' }}
           onMouseLeave={e => { if (!isSel) e.currentTarget.style.background = 'transparent' }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: isSel ? 'var(--accent)' : isWidened ? '#d48c1a' : 'var(--text)' }}>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: isSel ? 'var(--accent)' : isWidened ? '#a37200' : 'var(--text)' }}>
               {p.label}
             </span>
             {(p.rdfs_comment || p.rdfs_label) && (
@@ -102,7 +102,7 @@ export default function PropertyPickerModal({ sourceNode, targetNode, onConfirm,
               </span>
             )}
             {isWidened && (
-              <span style={{ fontSize: 9, color: '#d48c1a', background: 'rgba(255,179,0,0.1)', padding: '1px 5px', borderRadius: 3, border: '1px solid rgba(255,179,0,0.25)' }}>
+              <span style={{ fontSize: 9, color: '#a37200', background: 'rgba(255,191,40,0.1)', padding: '1px 5px', borderRadius: 3, border: '1px solid rgba(163,114,0,0.25)' }}>
                 ↓ {p.widened_from.map(u => u.split(/[#/]/).pop()).join(', ')}
               </span>
             )}
@@ -112,7 +112,7 @@ export default function PropertyPickerModal({ sourceNode, targetNode, onConfirm,
         {infoUri === p.uri && (p.rdfs_comment || p.rdfs_label) && (
           <div style={{
             padding: '8px 14px 8px 18px', fontSize: 10, color: 'var(--text-dim)',
-            background: 'rgba(99,145,234,0.06)', borderLeft: '2px solid var(--accent)',
+            background: 'rgba(25,190,207,0.06)', borderLeft: '2px solid var(--accent)',
             lineHeight: 1.5, maxHeight: 120, overflowY: 'auto',
           }}>
             {p.rdfs_comment || p.rdfs_label}
@@ -156,9 +156,9 @@ export default function PropertyPickerModal({ sourceNode, targetNode, onConfirm,
         {/* Property list */}
         <div style={{ flex: 1, overflowY: 'auto', minHeight: 80 }}>
           {loading ? (
-            <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 11 }}>Lade Properties…</div>
+            <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 11 }}>Loading properties…</div>
           ) : filtered.length === 0 ? (
-            <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 11 }}>Keine Properties gefunden</div>
+            <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-muted)', fontSize: 11 }}>No properties found</div>
           ) : (
             <>
               {direct.length > 0 && (<>
@@ -174,7 +174,7 @@ export default function PropertyPickerModal({ sourceNode, targetNode, onConfirm,
                 {inherited.map(p => renderPropRow(p))}
               </>)}
               {widened.length > 0 && (<>
-                <div style={{ padding: '5px 14px 3px', fontSize: 9, color: '#d48c1a', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(255,179,0,0.05)', borderTop: '1px solid rgba(255,179,0,0.15)' }}>
+                <div style={{ padding: '5px 14px 3px', fontSize: 9, color: '#a37200', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(255,191,40,0.05)', borderTop: '1px solid rgba(255,191,40,0.15)' }}>
                   Widening: from subclasses ({widened.length})
                 </div>
                 {widened.map(p => renderPropRow(p))}
@@ -191,7 +191,7 @@ export default function PropertyPickerModal({ sourceNode, targetNode, onConfirm,
             <Link2 size={10} color="var(--accent)" style={{ flexShrink: 0 }} />
             <span style={{ fontSize: 9, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Join Source:</span>
             <select value={joinColumnSource} onChange={e => setJoinColumnSource(e.target.value)} style={selectStyle}>
-              <option value="">(kein – Auto-Detect)</option>
+              <option value="">(none – auto-detect)</option>
               {srcCols.map(c => <option key={`src_${c}`} value={c}>{c}</option>)}
             </select>
           </div>
@@ -201,7 +201,7 @@ export default function PropertyPickerModal({ sourceNode, targetNode, onConfirm,
             <Link2 size={10} color="var(--green)" style={{ flexShrink: 0 }} />
             <span style={{ fontSize: 9, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>Join Target:</span>
             <select value={joinColumnTarget} onChange={e => setJoinColumnTarget(e.target.value)} style={selectStyle}>
-              <option value="">(kein – Auto-Detect)</option>
+              <option value="">(none – auto-detect)</option>
               {tgtCols.map(c => <option key={`tgt_${c}`} value={c}>{c}</option>)}
             </select>
           </div>
